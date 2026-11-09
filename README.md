@@ -1,5 +1,24 @@
 # 🐷 ĐUA HEO — Pig Racing Arena
 
+## 🎮 ĐUA HEO ARCADE — GIAO DIỆN THEO ẢNH THIẾT KẾ
+
+**[▶ CHƠI NGAY TRÊN GITHUB PAGES](https://hanfun.github.io/dua_heo/)**
+
+Bản game hiện tại là phiên bản giao diện mới, bám theo ảnh mẫu nông trại hoạt hình:
+
+- [`index.html`](index.html): trang game chính (chạy ngay trên Pages).
+- [`site/style.css`](site/style.css): HUD game arcade 1600×900, logo, header, bảng xếp hạng trái, minimap + khoảng cách phải, bảng gõ chữ màu tím, footer âm thanh.
+- [`site/pigs.js`](site/pigs.js): dữ liệu và **20 heo vector riêng**; sáu trạng thái chân chạy cho mỗi heo, ngoại hình béo/ốm/cơ bắp, ninja, vằn vện, cầu vồng...
+- [`site/game.js`](site/game.js): đua 3 vòng, game loop, tên heo riêng, avatar tùy chọn, bài gõ tiếng Việt/Anh, phép toán, chữ đúng xanh/chữ sai đỏ, BOOST, âm thanh tổng hợp.
+- [`assets/scenes/race-farm.svg`](assets/scenes/race-farm.svg): cảnh nông trại có hàng rào, cờ, khán giả và cổng đích.
+
+**Chạy demo local:** mở `index.html` bằng một static server, ví dụ `python3 -m http.server 8080` tại thư mục repo, sau đó vào `http://localhost:8080`. Vì `index.html` tham chiếu `site/*.js` và `assets/*.svg`, **không mở file HTML qua file://** trong phiên bản mới.
+
+**Giới hạn hiện tại:** đây là demo **single-player + 7 heo bot** trên Canvas, chưa phải multiplayer hoặc Phaser; các nhân vật vector là phong cách gần ảnh thiết kế nhưng **không phải ảnh sprite 3D/chibi giống nguyên mẫu 100%**. Avatar chỉ dùng trên máy người chơi; demo chưa có backend. Giao diện 16:9 đẹp nhất ở màn hình ngang.
+
+**GitHub Pages:** workflow `.github/workflows/pages.yml` đã tự động triển khai thành công ngày 09/11/2026. Nếu có commit mới, đợi job ở [GitHub Actions](https://github.com/hanfun/dua_heo/actions/workflows/pages.yml) xanh rồi làm mới trang.
+
+
 Game đua heo trực tuyến nhiều người chơi với hai chế độ **Đua may mắn (Auto Racing)** và **Đua thử thách (Challenge Racing)**.
 
 > **Trạng thái:** Giai đoạn 0 — tài liệu định hướng và lựa chọn công nghệ, chưa có code game chạy được.
