@@ -132,6 +132,7 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
   var botTimes = [];
   var particles = [];
   var lastFrame = 0;
+  var frameId = 0;
   var composition = false;
   var correctWordsPlayed = 0;
   var soundOn = true;
@@ -177,6 +178,7 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
     if(type==="lose"){[500,395,300,210].forEach(function(n,i){note(n,.24,"triangle",.055,i*.18);});}
   }
   function reset() {
+    if(frameId){cancelAnimationFrame(frameId);frameId=0;}
     racers.forEach(function(p,i){p.distance=0;p.speed=p.base;p.boost=0;p.boostUntil=0;p.finishTime=null;p.colorIndex=i;});
     particles=[];elapsed=0;round=0;lastFrame=0;nextQuestionDelay=0;isStarted=false;
     state="ready";challengeDone=false;answer.value="";answer.disabled=true;el("submit").disabled=true;
@@ -192,7 +194,7 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
   }
   function begin(){
     initAudio();reset();state="running";isStarted=true;overlay.classList.add("hidden");sfx("start");
-    startQuestion();answer.focus();lastFrame=performance.now();requestAnimationFrame(frame);
+    startQuestion();answer.focus();lastFrame=performance.now();frameId=requestAnimationFrame(frame);
   }
   function makeMath(){
     var operators=["+","−","×","÷"];
@@ -264,7 +266,8 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
     if(count>correctWordsPlayed){correctWordsPlayed=count;sfx("correct");}
     var n=typed.length;
     if(n>lastInput.length && typed.slice(0,n)!==target.slice(0,n)){
-      sfx("wrong");feedback.textContent="🐽 Úi! Từ sai đã tô đỏ — sửa bằng Backspace nhé!";
+      if(typed.slice(lastInput.length,n)!==target.slice(lastInput.length,n))sfx("wrong");
+      feedback.textContent="🐽 Úi! Từ sai đã tô đỏ — sửa bằng Backspace nhé!";
     } else if(typed.slice(0,n)===target.slice(0,n)) {
       feedback.textContent="✅ Đúng rồi, tiếp tục gõ!";
     }
@@ -342,8 +345,9 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
     if(racers.every(function(p){return p.finishTime!==null;})){endRace();}
     if(elapsed-lastScoreUpdate>.12){lastScoreUpdate=elapsed;updateScore();}
     var remain=Math.max(0,qDuration-(elapsed-questionStarted));
-    if(Math.ceil(remain)!==lastQuestionTime){
-      lastQuestionTime=Math.ceil(remain);el("qtime").textContent="⏳ "+remain.toFixed(1)+" giây";
+    var tenth=Math.floor(remain*10);
+    if(tenth!==lastQuestionTime){
+      lastQuestionTime=tenth;el("qtime").textContent="⏳ "+remain.toFixed(1)+" giây";
     }
     var myLap=Math.min(3,Math.floor(racers[0].distance/lapDistance)+1);
     el("lap").textContent=myLap+"/3";
@@ -469,7 +473,7 @@ canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{
     var dt=clamp((now-lastFrame)/1000,0,.055);
     lastFrame=now;
     updateRace(dt);paint(elapsed);
-    if(state==="running")requestAnimationFrame(frame);
+    if(state==="running")frameId=requestAnimationFrame(frame);
   }
   answer.addEventListener("input",onTyping);
   answer.addEventListener("compositionstart",function(){composition=true;});
