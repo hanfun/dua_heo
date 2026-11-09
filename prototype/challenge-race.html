@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bầy Heo Đua • Thử thách gõ chữ & tính toán</title>
+<style>
+:root{font-family:"Trebuchet MS",system-ui,sans-serif;color:#39245e;background:#f8eaca;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,#fff6d8,#f9def0 54%,#d1f0fd);min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0;font-weight:900}
+.shell{max-width:1530px;margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+h1{margin:0;font-size:clamp(23px,3.4vw,44px);color:#fff;text-shadow:0 3px 0 #873e9c,3px 5px 0 #502f74,-1px -1px 1px #502f74;letter-spacing:.5px}
+.sub{font-weight:900;color:#b03663;letter-spacing:.4px;margin:3px 0 0}
+.header-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill,.control{border-radius:16px;padding:11px 15px;box-shadow:0 4px 0 rgba(86,52,116,.18);background:#fff;color:#553277;font-weight:900}
+.pill b{color:#ec5288}.control{background:#51317a;color:#fff}.control.primary{background:#ef528c;color:white}.control:hover,.choice:hover{filter:brightness(1.08)}.control:focus-visible,.choice:focus-visible,input:focus-visible{outline:4px solid #ffcf42;outline-offset:3px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 276px;gap:14px}.card{background:rgba(255,255,255,.94);border:4px solid #70479a;border-radius:24px;box-shadow:0 9px 0 rgba(74,38,102,.18);overflow:hidden}
+.arena-bar{background:linear-gradient(100deg,#6f41ad,#a34cc2);color:#fff;display:flex;gap:10px;padding:10px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-weight:900}
+.arena-bar span{background:#ffffff24;border-radius:18px;padding:5px 10px}.canvaswrap{position:relative;background:#c6f0fc}
+canvas{width:100%;height:auto;aspect-ratio:1200/620;display:block}.canvas-cover{position:absolute;inset:0;background:#2a1846ae;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:#fff}
+.canvas-cover.hidden{display:none}.canvas-cover .message{max-width:530px;background:#583484ed;border:3px solid #ffd46c;border-radius:26px;padding:20px;box-shadow:0 10px 25px #24143f75}
+.canvas-cover h2{font-size:clamp(24px,3vw,37px);margin:0 0 12px;color:#ffed94}.canvas-cover p{line-height:1.5}.canvas-cover .big{background:#ffcd35;color:#522c72;border-radius:16px;padding:12px 24px;box-shadow:0 5px 0 #b57324}
+.bottom-hint{padding:8px 14px;text-align:center;font-size:13px;font-weight:800;color:#79549a;background:#f4e6ff}
+.sidebar{padding:15px}.sidebar h2{font-size:20px;margin:0 0 10px}.racer{display:flex;align-items:center;justify-content:space-between;padding:9px 6px;border-bottom:1px dashed #d7b8e8;font-weight:900;gap:6px}.racer.me{background:#fff0b5;border-radius:12px}.racer .position{display:inline-grid;place-items:center;border-radius:100%;width:26px;height:26px;background:#6f4ca5;color:#fff;font-size:13px}
+.racer .nm{flex:1;min-width:0;font-size:13px}.racer .meter{color:#a060b1;font-size:12px;white-space:nowrap}.tip{font-size:13px;color:#845e9c;line-height:1.5;margin-top:14px}
+.challenge{margin-top:14px;padding:18px;border:4px solid #7b4db2;border-radius:25px;background:linear-gradient(120deg,#fbecff,#fafaff);box-shadow:0 9px 0 #c8b0e4}
+.challenge-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.challenge h2{font-size:clamp(17px,2.2vw,24px);margin:0;color:#63368e}
+.choices{display:flex;gap:7px;flex-wrap:wrap}.choice{padding:8px 12px;border-radius:14px;color:#72459f;background:white;border:2px solid #cbb3e7}.choice.active{background:#7645b0;border-color:#7645b0;color:white}
+.prompt{display:flex;flex-wrap:wrap;gap:6px;min-height:72px;background:#fff;border:3px solid #d8bdf6;border-radius:17px;padding:13px;margin:15px 0 9px;align-items:center;line-height:1.7;font-size:clamp(15px,2.1vw,23px);font-weight:900}
+.word{padding:2px 5px;border-radius:7px;white-space:pre-wrap}.word.correct{background:#b8f7d4;color:#116b3c}.word.wrong{background:#ffd1d1;color:#b91639;text-decoration:underline wavy #e23254}.word.pending{background:#fff2af;color:#7a5e29}.word.active{outline:2px solid #d4c1fb;color:#69448e}.word.other{color:#6e6686}.prompt.math{justify-content:center;font-size:clamp(25px,5vw,42px)}
+.typearea{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}.typearea input{min-width:0;flex:1 1 310px;padding:15px 18px;border:3px solid #b894de;border-radius:16px;font-size:clamp(17px,2vw,24px);color:#3b285e;font-weight:700;background:#fff}.typearea input:disabled{background:#eee7f5}.typearea button{border-radius:15px;padding:10px 22px;background:#ffcc37;color:#55316e}
+.feedback{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;font-weight:900}.feedback .status{color:#5b4181}.feedback .countdown{background:#f8d6eb;padding:7px 11px;border-radius:12px;color:#9c397a}
+.legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:#624b87;font-weight:800}.legend strong{padding:2px 7px;border-radius:7px}.legend .green{background:#b8f7d4;color:#116b3c}.legend .red{background:#ffd1d1;color:#b91639}
+.footer{font-size:12px;color:#826d9a;text-align:center;margin:15px 0 6px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:block}.scorelist{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:5px}.racer{border-bottom:0;background:#f7f0ff;border-radius:12px;padding:7px}.arena-bar{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div><h1>🏁 BẦY HEO ĐUA 🐷</h1><p class="sub">THỬ THÁCH GÕ PHÍM • ĐƯỜNG ĐUA 3 VÒNG</p></div>
+    <div class="header-controls">
+      <div class="pill">🏆 Vòng <b id="lap">1/3</b></div>
+      <div class="pill">⏱️ <b id="clock">00:00.0</b></div>
+      <button class="control" id="sound" type="button" aria-pressed="true">🔊 Âm thanh: Bật</button>
+      <button class="control primary" id="restart" type="button">↻ Chơi lại</button>
+    </div>
+  </header>
+  <div class="layout">
+    <section class="card" aria-label="Đường đua heo">
+      <div class="arena-bar"><strong>🐷 ĐƯỜNG ĐUA NÔNG TRẠI</strong><span id="raceInfo">Sẵn sàng xuất phát</span><span>🐽 Heo của bạn: Cơ Bắp</span></div>
+      <div class="canvaswrap">
+        <canvas id="track" width="1200" height="620" aria-label="Đường đua 6 heo gồm 3 vòng"></canvas>
+        <div class="canvas-cover" id="overlay">
+          <div class="message"><h2 id="overlayTitle">🐷 Cùng đua nào!</h2>
+            <p id="overlayBody">Mỗi từ gõ đúng chuyển <strong style="color:#86ffb7">màu xanh</strong>; từ sai chuyển <strong style="color:#ff9999">màu đỏ</strong>. Trả lời nhanh để BOOST heo của bạn.</p>
+            <button id="start" class="big" type="button">🚀 BẮT ĐẦU ĐUA</button>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-hint">🐖 Heo luôn chạy kể cả khi bạn đang gõ • ⚡ BOOST tăng tốc tạm thời • 🏁 Đua đủ 3 vòng</div>
+    </section>
+    <aside class="card sidebar">
+      <h2>🏆 Xếp hạng trực tiếp</h2><div id="scorelist" class="scorelist"></div>
+      <p class="tip"><strong>⭐ Luật demo:</strong> 6 heo chạy cùng tốc độ cơ bản. Các đối thủ máy tự trả lời. Bạn càng trả lời đúng sớm, BOOST càng mạnh trong 3 giây. Mọi heo vẫn chạy khi câu hỏi đang mở.</p>
+      <p class="tip"><strong>🔉 Âm thanh:</strong> “ting” đúng từ, “boing” sai từ, “vút” tăng tốc, nhạc ngắn khi thắng hoặc thua. Âm được tạo bởi trình duyệt nên không cần tải tệp âm thanh.</p>
+    </aside>
+  </div>
+  <section class="challenge" aria-label="Thử thách tương tác">
+    <div class="challenge-head">
+      <h2 id="questionLabel">⌨️ THỬ THÁCH: GÕ CHỮ SIÊU TỐC</h2>
+      <div class="choices">
+        <button class="choice active" type="button" data-mode="typing">⌨️ Gõ chữ</button>
+        <button class="choice" type="button" data-mode="math">🧮 Tính toán</button>
+        <button class="choice" type="button" data-mode="mixed">🎲 Trộn câu</button>
+      </div>
+    </div>
+    <div id="prompt" class="prompt" aria-live="polite">Ấn “BẮT ĐẦU ĐUA” để nhận câu đầu tiên.</div>
+    <div class="typearea">
+      <input type="text" id="answer" aria-label="Gõ câu trả lời" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="Gõ lại câu ở phía trên..." disabled>
+      <button type="button" id="submit" disabled>GỬI ĐÁP ÁN ↵</button>
+    </div>
+    <div class="feedback"><span class="status" id="feedback" aria-live="polite">Sẵn sàng bứt tốc!</span><span class="countdown" id="qtime">⏳ 8.0 giây</span></div>
+    <div class="legend"><span><strong class="green">✓ Xanh</strong> Từ nhập chính xác</span><span><strong class="red">✕ Đỏ</strong> Từ gõ sai</span><span>⚡ Trả lời đúng càng nhanh, heo càng tăng tốc</span></div>
+  </section>
+  <p class="footer">Nguyên mẫu tương tác dùng Canvas 2D và Web Audio. Đối thủ hiện là máy giả lập; phiên bản multiplayer cần chuyển việc chấm điểm, vận tốc và kết quả về máy chủ.</p>
+</div>
+<script>
+(function () {
+  "use strict";
+  var canvas = document.getElementById("track");
+  var ctx = canvas.getContext("2d");
+  var answer = document.getElementById("answer");
+  var promptNode = document.getElementById("prompt");
+  var feedback = document.getElementById("feedback");
+  var scorelist = document.getElementById("scorelist");
+  var overlay = document.getElementById("overlay");
+  var soundBtn = document.getElementById("sound");
+  var racers = [
+    {name:"Cơ Bắp",color:"#ee8797",kind:"muscle",base:13.7,me:true},
+    {name:"Ú Nụ",color:"#f6a6b3",kind:"fat",base:13.7},
+    {name:"Tí Teo",color:"#ffdc7b",kind:"thin",base:13.7},
+    {name:"Vằn Vện",color:"#eac18e",kind:"stripe",base:13.7},
+    {name:"Cầu Vồng",color:"#bca8fd",kind:"rainbow",base:13.7},
+    {name:"Ẩn Thân",color:"#9fa5c2",kind:"ninja",base:13.7}
+  ];
+  var texts = [
+    "Con heo cơ bắp đang bứt tốc về đích!",
+    "Ú Nụ không hề chậm, chỉ đang lấy đà.",
+    "Heo Tia Chớp chạy qua cánh đồng hoa.",
+    "The funny pig jumps over a blue cloud.",
+    "Bánh bao biết bay nhưng vẫn thích chạy bộ.",
+    "Năm chú heo cùng luyện gõ phím siêu tốc.",
+    "A happy pig can run faster than the wind.",
+    "Heo vằn vện phi như tên lửa màu hồng."
+  ];
+  var lapDistance = 220;
+  var totalDistance = lapDistance * 3;
+  var qDuration = 8;
+  var boostedFor = 3;
+  var state = "ready";
+  var mode = "typing";
+  var currentKind = "typing";
+  var question = "";
+  var mathResult = 0;
+  var questionStarted = 0;
+  var elapsed = 0;
+  var round = 0;
+  var indexText = 0;
+  var challengeDone = false;
+  var answeredBots = [];
+  var botTimes = [];
+  var particles = [];
+  var lastFrame = 0;
+  var composition = false;
+  var correctWordsPlayed = 0;
+  var soundOn = true;
+  var audio = null;
+  var lastInput = "";
+  var nextQuestionDelay = 0;
+  var lastScoreUpdate = 0;
+  var lastQuestionTime = -1;
+  var isStarted = false;
+
+  function el(id){return document.getElementById(id);}
+  function rand(min,max){return min + Math.random()*(max-min);}
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function normalize(s){return s.normalize("NFC");}
+  function initAudio() {
+    if(!soundOn)return;
+    var AudioClass = window.AudioContext || window.webkitAudioContext;
+    if(!AudioClass)return;
+    if(!audio) audio = new AudioClass();
+    if(audio.state === "suspended") audio.resume();
+  }
+  function note(freq,duration,wave,gain,start,slide) {
+    if(!soundOn || !audio)return;
+    var at=audio.currentTime+(start||0);
+    var oscillator=audio.createOscillator(), amp=audio.createGain();
+    oscillator.type=wave||"sine";
+    oscillator.frequency.setValueAtTime(freq,at);
+    if(slide)oscillator.frequency.exponentialRampToValueAtTime(Math.max(60,slide),at+duration);
+    amp.gain.setValueAtTime(.0001,at);
+    amp.gain.exponentialRampToValueAtTime(Math.max(.0002,gain||.035),at+.014);
+    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
+    oscillator.connect(amp).connect(audio.destination);
+    oscillator.start(at);oscillator.stop(at+duration+.03);
+  }
+  function sfx(type){
+    if(!soundOn)return;
+    initAudio();
+    if(type==="correct") note(740,.072,"sine",.034,0,920);
+    if(type==="wrong"){note(240,.15,"triangle",.072,0,115);note(140,.13,"sine",.024,.05,90);}
+    if(type==="boost"){note(450,.13,"triangle",.075,0,790);note(790,.18,"sine",.065,.11,1120);}
+    if(type==="start"){[392,494,588,784].forEach(function(n,i){note(n,.12,"triangle",.045,i*.10);});}
+    if(type==="win"){[523,659,784,1046,784,1046].forEach(function(n,i){note(n,i>3?.34:.18,"triangle",.062,i*.15);});}
+    if(type==="lose"){[500,395,300,210].forEach(function(n,i){note(n,.24,"triangle",.055,i*.18);});}
+  }
+  function reset() {
+    racers.forEach(function(p,i){p.distance=0;p.speed=p.base;p.boost=0;p.boostUntil=0;p.finishTime=null;p.colorIndex=i;});
+    particles=[];elapsed=0;round=0;lastFrame=0;nextQuestionDelay=0;isStarted=false;
+    state="ready";challengeDone=false;answer.value="";answer.disabled=true;el("submit").disabled=true;
+    el("clock").textContent="00:00.0";el("lap").textContent="1/3";el("qtime").textContent="⏳ 8.0 giây";el("raceInfo").textContent="Sẵn sàng xuất phát";
+    promptNode.textContent="Ấn “BẮT ĐẦU ĐUA” để nhận câu đầu tiên.";
+    feedback.textContent="Sẵn sàng bứt tốc!";
+    el("overlayTitle").textContent="🐷 Cùng đua nào!";
+    el("overlayBody").textContent="Gõ chính xác từng từ hoặc giải phép tính để heo của bạn tăng tốc. Trong lúc bạn gõ, tất cả heo vẫn chạy!";
+    el("start").textContent="🚀 BẮT ĐẦU ĐUA";
+    overlay.classList.remove("hidden");
+    updateScore();
+    paint(0);
+  }
+  function begin(){
+    initAudio();reset();state="running";isStarted=true;overlay.classList.add("hidden");sfx("start");
+    startQuestion();answer.focus();lastFrame=performance.now();requestAnimationFrame(frame);
+  }
+  function makeMath(){
+    var operators=["+","−","×","÷"];
+    var op=operators[Math.floor(Math.random()*operators.length)];
+    var a,b;
+    if(op==="÷"){b=Math.floor(rand(2,13));mathResult=Math.floor(rand(2,14));a=b*mathResult;}
+    else{a=Math.floor(rand(12,99));b=Math.floor(rand(2,26));mathResult=op==="+"?a+b:op==="−"?a-b:a*b;}
+    return a+" "+op+" "+b+" = ?";
+  }
+  function startQuestion(){
+    if(state!=="running")return;
+    round++;
+    currentKind=mode==="mixed"?(Math.random()<.5?"typing":"math"):mode;
+    question=currentKind==="math"?makeMath():texts[indexText++%texts.length];
+    questionStarted=elapsed;
+    challengeDone=false;answeredBots=Array(racers.length).fill(false);
+    botTimes=racers.map(function(p,i){return i===0?Infinity:rand(1.1,6.6);});
+    correctWordsPlayed=0;lastInput="";lastQuestionTime=-1;
+    answer.value="";answer.disabled=false;el("submit").disabled=false;
+    answer.placeholder=currentKind==="math"?"Nhập kết quả rồi nhấn Enter...":"Gõ chính xác từng từ...";
+    answer.setAttribute("inputmode",currentKind==="math"?"numeric":"text");
+    el("questionLabel").textContent=currentKind==="math"?"🧮 THỬ THÁCH: TÍNH TOÁN THẦN TỐC":"⌨️ THỬ THÁCH: GÕ CHỮ SIÊU TỐC";
+    promptNode.classList.toggle("math",currentKind==="math");
+    feedback.textContent="Nhanh tay lên! Heo của bạn vẫn đang chạy...";
+    drawWords();answer.focus();
+  }
+  function wordStatus(text,typed,start,end) {
+    if(typed.length<=start)return "other";
+    var upto=Math.min(end,typed.length);
+    var part=typed.slice(start,upto);
+    var expected=text.slice(start,upto);
+    if(part!==expected)return "wrong";
+    if(typed.length>=end)return "correct";
+    return "pending";
+  }
+  function drawWords(){
+    promptNode.replaceChildren();
+    if(currentKind==="math"){promptNode.textContent=question;return;}
+    var fragment=document.createDocumentFragment();
+    var re=/\S+/g, match,idx=0;
+    var typed=normalize(answer.value),target=normalize(question);
+    while((match=re.exec(target))!==null){
+      if(match.index>idx)fragment.appendChild(document.createTextNode(target.slice(idx,match.index)));
+      var span=document.createElement("span");
+      span.textContent=match[0];
+      span.className="word "+wordStatus(target,typed,match.index,match.index+match[0].length);
+      if(typed.length===match.index)span.className="word active";
+      fragment.appendChild(span);
+      idx=match.index+match[0].length;
+    }
+    if(idx<target.length)fragment.appendChild(document.createTextNode(target.slice(idx)));
+    promptNode.appendChild(fragment);
+  }
+  function validWordCount(typed){
+    var c=0;var re=/\S+/g,match,target=normalize(question);
+    while((match=re.exec(target))!==null){
+      var end=match.index+match[0].length;
+      if(typed.length>=end && typed.slice(match.index,end)===match[0])c++;
+    }
+    return c;
+  }
+  function onTyping(){
+    if(state!=="running"||challengeDone)return;
+    if(currentKind!=="typing")return;
+    var typed=normalize(answer.value),target=normalize(question);
+    drawWords();
+    if(composition)return;
+    var count=validWordCount(typed);
+    if(count>correctWordsPlayed){correctWordsPlayed=count;sfx("correct");}
+    var n=typed.length;
+    if(n>lastInput.length && typed.slice(0,n)!==target.slice(0,n)){
+      sfx("wrong");feedback.textContent="🐽 Úi! Từ sai đã tô đỏ — sửa bằng Backspace nhé!";
+    } else if(typed.slice(0,n)===target.slice(0,n)) {
+      feedback.textContent="✅ Đúng rồi, tiếp tục gõ!";
+    }
+    lastInput=typed;
+    if(typed===target)submitAnswer();
+  }
+  function submitAnswer(){
+    if(state!=="running" || challengeDone)return;
+    var typed=normalize(answer.value).trim();
+    var right=currentKind==="typing"
+      ?normalize(answer.value)===normalize(question)
+      :typed!=="" && Number(typed)===mathResult;
+    if(!right){
+      sfx("wrong");
+      feedback.textContent=currentKind==="math"?"❌ Kết quả chưa đúng, thử lại!":"❌ Chưa khớp toàn bộ câu, hãy sửa chữ màu đỏ!";
+      return;
+    }
+    challengeDone=true;answer.disabled=true;el("submit").disabled=true;
+    var rt=elapsed-questionStarted;
+    var rank=1+botTimes.slice(1).filter(function(t){return t<=rt;}).length;
+    var boost=[8,6,4.6,3.2,2.2,1.3][Math.min(rank-1,5)];
+    racers[0].boost=boost;racers[0].boostUntil=elapsed+boostedFor;
+    feedback.textContent="⚡ Đúng sau "+rt.toFixed(2)+"s • Hạng "+rank+"/6 • BOOST +"+boost.toFixed(1)+" m/s trong 3 giây!";
+    sfx("boost");
+  }
+  function timeoutQuestion(){
+    challengeDone=true;answer.disabled=true;el("submit").disabled=true;
+    feedback.textContent="⌛ Hết giờ! Chờ thử thách tiếp theo. Heo vẫn chạy!";
+  }
+  function endRace(){
+    if(state!=="running")return;
+    state="finished";answer.disabled=true;el("submit").disabled=true;
+    var sorted=racers.slice().sort(function(a,b){return (a.finishTime??Infinity)-(b.finishTime??Infinity);});
+    var rank=sorted.indexOf(racers[0])+1;
+    var winning=rank===1;
+    el("overlayTitle").textContent=winning?"🏆 CƠ BẮP VÔ ĐỊCH!":"🐷 VỀ ĐÍCH HẠNG "+rank+"!";
+    el("overlayBody").textContent=winning
+      ?"Heo của bạn đã bứt tốc vượt cả bầy! Xuất sắc!"
+      :"Lần tới gõ nhanh hơn để giành ngôi đầu. Vui là chính!";
+    el("start").textContent="🔁 ĐUA LẠI";
+    overlay.classList.remove("hidden");el("raceInfo").textContent="Đã kết thúc · Hạng "+rank+"/6";
+    sfx(winning?"win":"lose");
+    updateScore();
+  }
+  function updateRace(dt){
+    elapsed+=dt;
+    var qElapsed=elapsed-questionStarted;
+    for(var i=1;i<racers.length;i++){
+      if(!answeredBots[i] && qElapsed>=botTimes[i] && qElapsed<=qDuration+1){
+        answeredBots[i]=true;
+        var botRank=1+botTimes.slice(1).filter(function(t){return t<botTimes[i];}).length;
+        racers[i].boost=[8,6,4.6,3.2,2.2,1.3][Math.min(botRank-1,5)];
+        racers[i].boostUntil=elapsed+boostedFor;
+      }
+    }
+    if(qElapsed>=qDuration&&!challengeDone)timeoutQuestion();
+    if(qElapsed>=qDuration+1 && !nextQuestionDelay){nextQuestionDelay=elapsed;}
+    if(nextQuestionDelay && elapsed>=nextQuestionDelay+.2){nextQuestionDelay=0;startQuestion();}
+    racers.forEach(function(p){
+      if(p.finishTime!==null)return;
+      p.speed=p.base+(elapsed<p.boostUntil?p.boost:0);
+      var before=p.distance;
+      p.distance=Math.min(totalDistance,p.distance+p.speed*dt);
+      if(before<totalDistance && p.distance>=totalDistance){
+        var leftover=(totalDistance-before)/p.speed;
+        p.finishTime=elapsed-dt+leftover;
+      }
+      if(Math.random()<dt*(p.speed>p.base?24:8)){
+        particles.push({x:190+(p.distance/totalDistance)*950-27,y:147+p.colorIndex*75+Math.random()*13,
+          r:rand(2,7),life:rand(.25,.65),boost:p.speed>p.base});
+      }
+    });
+    particles.forEach(function(p){p.x-=34*dt;p.y+=9*dt;p.life-=dt;});
+    particles=particles.filter(function(p){return p.life>0;}).slice(-200);
+    if(racers.every(function(p){return p.finishTime!==null;})){endRace();}
+    if(elapsed-lastScoreUpdate>.12){lastScoreUpdate=elapsed;updateScore();}
+    var remain=Math.max(0,qDuration-(elapsed-questionStarted));
+    if(Math.ceil(remain)!==lastQuestionTime){
+      lastQuestionTime=Math.ceil(remain);el("qtime").textContent="⏳ "+remain.toFixed(1)+" giây";
+    }
+    var myLap=Math.min(3,Math.floor(racers[0].distance/lapDistance)+1);
+    el("lap").textContent=myLap+"/3";
+    el("raceInfo").textContent="Quãng đường "+Math.round(racers[0].distance)+" / "+totalDistance+" m";
+    var m=Math.floor(elapsed/60),s=(elapsed%60).toFixed(1).padStart(4,"0");
+    el("clock").textContent=String(m).padStart(2,"0")+":"+s;
+  }
+  function updateScore(){
+    var sorted=racers.slice().sort(function(a,b){return b.distance-a.distance || a.colorIndex-b.colorIndex;});
+    scorelist.replaceChildren();
+    sorted.forEach(function(p,i){
+      var row=document.createElement("div");row.className="racer"+(p.me?" me":"");
+      var pos=document.createElement("span");pos.className="position";pos.textContent=i+1;
+      var name=document.createElement("span");name.className="nm";name.textContent=(p.me?"⭐ ":"🐽 ")+p.name;
+      var meters=document.createElement("span");meters.className="meter";meters.textContent=Math.round(p.distance)+"m"+(p.speed>p.base?" ⚡":"");
+      row.append(pos,name,meters);scorelist.appendChild(row);
+    });
+  }
+  function roundedRect(x,y,w,h,r){
+    ctx.beginPath();ctx.roundRect(x,y,w,h,r);
+  }
+  function pig(x,y,p,time){
+    var boosted=p.speed>p.base;
+    var bob=Math.sin(time*13+p.colorIndex*1.2)*(boosted?4:2.5);
+    var fat=p.kind==="fat",thin=p.kind==="thin";
+    var sx=fat?1.30:thin?.78:p.kind==="muscle"?1.13:1;
+    var sy=fat?1.14:thin?.85:1;
+    ctx.save();ctx.translate(x,y+bob);ctx.scale(sx,sy);
+    if(boosted){
+      ctx.strokeStyle="#ffe658";ctx.lineWidth=5;
+      for(var z=0;z<3;z++){ctx.beginPath();ctx.moveTo(-54-z*12,(-17+z*17));ctx.lineTo(-23-z*9,(-17+z*17));ctx.stroke();}
+    }
+    // Running legs are animated separately from the body.
+    var phase=Math.sin(time*(boosted?24:16)+p.colorIndex);
+    ctx.fillStyle="#9e5364";
+    for(var leg=0;leg<4;leg++){
+      var dx=(leg%2===0?-17:15),dy=leg<2?12:22;
+      ctx.save();ctx.translate(dx,dy);ctx.rotate((leg%2?1:-1)*phase*.55);
+      roundedRect(-7,0,14,18,5);ctx.fill();ctx.fillStyle="#5e4054";roundedRect(-8,13,16,7,4);ctx.fill();ctx.fillStyle="#9e5364";ctx.restore();
+    }
+    // Curly tail.
+    ctx.strokeStyle="#b76a78";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-33,0);ctx.bezierCurveTo(-60,-22,-68,12,-48,6);ctx.bezierCurveTo(-35,-3,-55,-10,-55,1);ctx.stroke();
+    // Body: unique silhouette variants.
+    ctx.fillStyle=p.color;ctx.strokeStyle="#a35b66";ctx.lineWidth=3;
+    ctx.beginPath();ctx.ellipse(0,0,p.kind==="muscle"?38:33,p.kind==="muscle"?25:24,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#fff9";ctx.beginPath();ctx.ellipse(-4,9,19,10,0,0,Math.PI*2);ctx.fill();
+    // Stripe pattern, rainbow, muscle.
+    if(p.kind==="stripe"){ctx.strokeStyle="#77503e";ctx.lineWidth=6;for(var t=-18;t<=13;t+=14){ctx.beginPath();ctx.moveTo(t-8,-16);ctx.lineTo(t+10,17);ctx.stroke();}}
+    if(p.kind==="rainbow"){["#fe6599","#fbbf38","#4acb9c","#6aa4ff"].forEach(function(c,k){ctx.strokeStyle=c;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-29+k*8,-18);ctx.lineTo(-22+k*8,14);ctx.stroke();});}
+    if(p.kind==="muscle"){ctx.fillStyle="#df7289";ctx.beginPath();ctx.ellipse(-25,9,12,14,-.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#a35b66";ctx.lineWidth=2;ctx.stroke();}
+    // Ears, eyes, snout.
+    ctx.fillStyle=p.color;ctx.strokeStyle="#9c5966";ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(10,-19);ctx.lineTo(8,-37);ctx.lineTo(29,-23);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(24,-14);ctx.lineTo(34,-29);ctx.lineTo(41,-7);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(25,-9,6.5,7.5,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#333048";ctx.beginPath();ctx.arc(28,-9,3.3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#f9b1b7";ctx.strokeStyle="#a85b72";ctx.lineWidth=2;
+    ctx.beginPath();ctx.ellipse(41,5,15,12,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#b65b74";ctx.beginPath();ctx.ellipse(36,5,2.5,3.6,0,0,Math.PI*2);ctx.ellipse(46,5,2.5,3.6,0,0,Math.PI*2);ctx.fill();
+    if(p.kind==="ninja"){ctx.fillStyle="#403b65";roundedRect(0,-20,37,10,4);ctx.fill();}
+    if(p.kind==="muscle"){ctx.strokeStyle="#e84362";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-22,-22);ctx.lineTo(-5,-34);ctx.lineTo(13,-22);ctx.stroke();}
+    if(p.kind==="thin"){ctx.fillStyle="#ffd538";ctx.beginPath();ctx.arc(5,-23,8,0,Math.PI*2);ctx.fill();}
+    if(p.kind==="fat"){ctx.fillStyle="#e94462";roundedRect(-30,-12,12,23,3);ctx.fill();}
+    ctx.restore();
+  }
+  function paint(time){
+    ctx.clearRect(0,0,1200,620);
+    var sky=ctx.createLinearGradient(0,0,0,120);
+    sky.addColorStop(0,"#7fd4fe");sky.addColorStop(1,"#f6fcff");
+    ctx.fillStyle=sky;ctx.fillRect(0,0,1200,132);
+    // Farm backdrop: hills, barn, clouds.
+    ctx.fillStyle="#79cc7d";
+    for(var h=-1;h<7;h++){ctx.beginPath();ctx.ellipse(h*240+140,133,170,55,0,Math.PI,Math.PI*2);ctx.fill();}
+    ctx.fillStyle="#fa8c72";ctx.fillRect(900,45,95,85);
+    ctx.fillStyle="#b94f62";ctx.beginPath();ctx.moveTo(889,45);ctx.lineTo(948,5);ctx.lineTo(1007,45);ctx.fill();
+    ctx.fillStyle="#fff4e8";ctx.fillRect(933,74,27,56);
+    ctx.fillStyle="#fff";
+    for(var c=0;c<5;c++){var cx=(c*270+70+time*5)%1350-90;ctx.beginPath();ctx.ellipse(cx,30+c%2*21,55,16,0,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle="#689e44";ctx.fillRect(0,122,1200,21);
+    // Dirt track with six parallel lanes.
+    ctx.fillStyle="#deb28a";roundedRect(114,142,1034,451,20);ctx.fill();
+    for(var i=0;i<6;i++){
+      var y=148+i*74;
+      ctx.fillStyle=i%2?"#f6d6ad":"#efd0a4";ctx.fillRect(119,y,1024,74);
+      ctx.strokeStyle="#fff8e5";ctx.setLineDash([14,10]);ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(119,y+74);ctx.lineTo(1144,y+74);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle="#815c80";ctx.font="bold 17px system-ui";ctx.textAlign="left";
+      ctx.fillText(racers[i].name,13,y+37);
+    }
+    // Lap markers (continuous track progress, no teleporting at lap boundaries).
+    var startX=188,endX=1138,trackW=endX-startX;
+    for(var j=0;j<4;j++){
+      var bx=startX+(j/3)*trackW;
+      ctx.save();ctx.globalAlpha=j===3?1:.42;
+      ctx.fillStyle=(j===3?"#ffffff":"#ffffffa8");ctx.fillRect(bx-3,142,7,451);
+      if(j===3){
+        for(var rr=0;rr<24;rr++){ctx.fillStyle=rr%2?"#161c2c":"#ffffff";ctx.fillRect(bx-13,145+rr*18.5,12,18.5);}
+      }
+      ctx.restore();
+      ctx.textAlign="center";ctx.font="900 16px system-ui";ctx.fillStyle="#633684";
+      ctx.fillText(j===0?"XUẤT PHÁT":j===3?"ĐÍCH":"VÒNG "+(j+1),bx,137);
+    }
+    // Dust puffs.
+    particles.forEach(function(p){
+      ctx.globalAlpha=clamp(p.life*1.4,0,.7);
+      ctx.fillStyle=p.boost?"#ead56c":"#fff6e5";
+      ctx.beginPath();ctx.arc(p.x,p.y+32,p.r,0,Math.PI*2);ctx.fill();
+    });ctx.globalAlpha=1;
+    racers.forEach(function(p,i){
+      var x=startX+(p.distance/totalDistance)*trackW;
+      var y=171+i*74+17;
+      ctx.fillStyle=p.me?"#fff0a2":"#ffffffd8";roundedRect(Math.max(118,x-52),y-57,p.me?86:76,19,9);ctx.fill();
+      ctx.font="bold 12px system-ui";ctx.fillStyle=p.me?"#783382":"#664969";ctx.textAlign="center";
+      ctx.fillText(p.me?"⭐ BẠN":p.name,Math.max(158,x-10),y-43);
+      pig(x,y,p,time);
+    });
+    // Track progress and legend.
+    ctx.fillStyle="#503270";ctx.font="bold 15px system-ui";ctx.textAlign="left";
+    ctx.fillText("🐽 Đường đua 3 vòng • Mỗi vạch lớn đánh dấu một vòng • Heo không dừng khi gõ",20,611);
+  }
+  function frame(now){
+    if(state!=="running")return;
+    var dt=clamp((now-lastFrame)/1000,0,.055);
+    lastFrame=now;
+    updateRace(dt);paint(elapsed);
+    if(state==="running")requestAnimationFrame(frame);
+  }
+  answer.addEventListener("input",onTyping);
+  answer.addEventListener("compositionstart",function(){composition=true;});
+  answer.addEventListener("compositionend",function(){composition=false;onTyping();});
+  answer.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();submitAnswer();}});
+  el("submit").addEventListener("click",submitAnswer);
+  el("start").addEventListener("click",begin);
+  el("restart").addEventListener("click",function(){if(state==="running")state="cancelled";reset();});
+  soundBtn.addEventListener("click",function(){soundOn=!soundOn;soundBtn.textContent=soundOn?"🔊 Âm thanh: Bật":"🔇 Âm thanh: Tắt";soundBtn.setAttribute("aria-pressed",String(soundOn));if(soundOn)initAudio();});
+  document.querySelectorAll("[data-mode]").forEach(function(button){
+    button.addEventListener("click",function(){
+      mode=button.getAttribute("data-mode");
+      document.querySelectorAll("[data-mode]").forEach(function(b){b.classList.toggle("active",b===button);});
+      if(state==="running"){startQuestion();}else{el("questionLabel").textContent=mode==="math"?"🧮 THỬ THÁCH: TÍNH TOÁN THẦN TỐC":"⌨️ THỬ THÁCH: GÕ CHỮ SIÊU TỐC";}
+    });
+  });
+  reset();
+})();
+</script>
+</body>
+</html>
