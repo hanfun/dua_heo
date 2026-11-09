@@ -160,7 +160,7 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
       <input type="text" id="answer" aria-label="Gõ câu trả lời" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="Gõ lại câu ở phía trên..." disabled>
       <button type="button" id="submit" disabled>GỬI ĐÁP ÁN ↵</button>
     </div>
-    <div class="feedback"><span class="status" id="feedback" aria-live="polite">Sẵn sàng bứt tốc!</span><span class="countdown" id="qtime">⏳ 8.0 giây</span></div>
+    <div class="feedback"><span class="status" id="feedback" aria-live="polite">Sẵn sàng bứt tốc!</span><span class="countdown" id="qtime">⏳ 12.0 giây</span></div>
     <div class="legend"><span><strong class="green">✓ Xanh</strong> Từ nhập chính xác</span><span><strong class="red">✕ Đỏ</strong> Từ gõ sai</span><span>⚡ Trả lời đúng càng nhanh, heo càng tăng tốc</span></div>
   </section>
   <p class="footer">Nguyên mẫu tương tác dùng Canvas 2D và Web Audio. Đối thủ hiện là máy giả lập; phiên bản multiplayer cần chuyển việc chấm điểm, vận tốc và kết quả về máy chủ.</p>
@@ -417,7 +417,7 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
         p.finishTime=elapsed-dt+leftover;
       }
       if(Math.random()<dt*(p.speed>p.base?24:8)){
-        particles.push({x:190+(p.distance/totalDistance)*950-27,y:147+p.colorIndex*75+Math.random()*13,
+        particles.push({x:190+(p.distance/totalDistance)*950-27,y:147+(p.colorIndex+.5)*(450/racers.length)+Math.random()*8,
           r:rand(2,7),life:rand(.25,.65),boost:p.speed>p.base});
       }
     });
@@ -503,7 +503,7 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
   }
   function paint(time){
     ctx.clearRect(0,0,1200,620);
-    var sky=ctx.createLinearGradient(0,0,0,120);
+    var sky=ctx.createLinearGradient(0,0,0,140);
     sky.addColorStop(0,"#7fd4fe");sky.addColorStop(1,"#f6fcff");
     ctx.fillStyle=sky;ctx.fillRect(0,0,1200,132);
     // Farm backdrop: hills, barn, clouds.
@@ -514,16 +514,29 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     ctx.fillStyle="#fff4e8";ctx.fillRect(933,74,27,56);
     ctx.fillStyle="#fff";
     for(var c=0;c<5;c++){var cx=(c*270+70+time*5)%1350-90;ctx.beginPath();ctx.ellipse(cx,30+c%2*21,55,16,0,0,Math.PI*2);ctx.fill();}
+
+    // Colorful barn sign, bunting and cheering crowd evoke the key art.
+    ctx.font="26px system-ui";ctx.textAlign="center";
+    for(var fan=0;fan<35;fan++){
+      var fx=fan*34+12, fy=104+Math.sin(fan*1.7)*6;
+      ctx.fillStyle=fan%3===0?"#f7b1b8":fan%3===1?"#ffd35a":"#bc8aee";
+      ctx.beginPath();ctx.arc(fx,fy,9,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#fce8b9";ctx.fillRect(fx-6,fy+7,13,10);
+      ctx.fillStyle="#302446";ctx.fillRect(fx-3,fy-1,2,2);ctx.fillRect(fx+3,fy-1,2,2);
+    }
+    ctx.strokeStyle="#af794d";ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(1200,115);ctx.stroke();
     ctx.fillStyle="#689e44";ctx.fillRect(0,122,1200,21);
     // Dirt track with six parallel lanes.
     ctx.fillStyle="#deb28a";roundedRect(114,142,1034,451,20);ctx.fill();
-    for(var i=0;i<6;i++){
-      var y=148+i*74;
-      ctx.fillStyle=i%2?"#f6d6ad":"#efd0a4";ctx.fillRect(119,y,1024,74);
+    var laneH=450/racers.length;
+    for(var i=0;i<racers.length;i++){
+      var y=148+i*laneH;
+      ctx.fillStyle=i%2?"#f6d6ad":"#efd0a4";ctx.fillRect(119,y,1024,laneH);
       ctx.strokeStyle="#fff8e5";ctx.setLineDash([14,10]);ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(119,y+74);ctx.lineTo(1144,y+74);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(119,y+laneH);ctx.lineTo(1144,y+laneH);ctx.stroke();ctx.setLineDash([]);
       ctx.fillStyle="#815c80";ctx.font="bold 17px system-ui";ctx.textAlign="left";
-      ctx.fillText(racers[i].name,13,y+37);
+      ctx.fillText(racers[i].name.slice(0,13),13,y+laneH*.63);
     }
     // Lap markers (continuous track progress, no teleporting at lap boundaries).
     var startX=188,endX=1138,trackW=endX-startX;
@@ -546,10 +559,10 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     });ctx.globalAlpha=1;
     racers.forEach(function(p,i){
       var x=startX+(p.distance/totalDistance)*trackW;
-      var y=171+i*74+17;
-      ctx.fillStyle=p.me?"#fff0a2":"#ffffffd8";roundedRect(Math.max(118,x-52),y-57,p.me?86:76,19,9);ctx.fill();
+      var y=148+(i+.5)*laneH;
+      ctx.fillStyle=p.me?"#fff0a2":"#ffffffd8";roundedRect(Math.max(118,x-52),y-38,p.me?100:90,18,9);ctx.fill();
       ctx.font="bold 12px system-ui";ctx.fillStyle=p.me?"#783382":"#664969";ctx.textAlign="center";
-      ctx.fillText(p.me?"⭐ BẠN":p.name,Math.max(158,x-10),y-43);
+      ctx.fillText(p.me?"⭐ "+p.name:p.name,Math.max(164,x-5),y-25);
       pig(x,y,p,time);
     });
     // Track progress and legend.
