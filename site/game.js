@@ -371,6 +371,7 @@ function keyEvents(){
  });
 }
 function setMode(next){
+ if(state==="racing"){bubble("Đổi loại thử thách ở trận tiếp theo nhé!");return;}
  if(mode===next)return;mode=next;
  $("typeMode").classList.toggle("chosen",next==="typing");
  $("mathMode").classList.toggle("chosen",next==="math");
