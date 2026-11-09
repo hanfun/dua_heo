@@ -96,6 +96,20 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
 @media(max-width:850px){.roster-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.setup-fields{grid-template-columns:1fr}.upload-row{grid-column:1;grid-row:auto}.name-wrap,.hint-name{grid-column:1}.setup-content{padding:13px}.header-controls{justify-content:center}}
 @media(max-width:490px){.roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.skin-name{font-size:12px}.skin-tag{font-size:9px}.setup-card{max-height:95vh}.setup-banner{padding:12px}.setup-banner h2{font-size:23px}.setup-bottom{justify-content:center}.setup-buttons{width:100%}.setup-buttons button{flex:1;padding:10px 8px;font-size:12px}.upload-row{flex-wrap:wrap}}
 
+
+.mini-map{margin-top:13px;border:2px solid #c7ace6;background:linear-gradient(140deg,#eefcf0,#f4edff);border-radius:15px;padding:12px}
+.mini-map-header{font-size:13px;font-weight:1000;color:#684298;display:flex;justify-content:space-between}
+.mini-map-rail{margin:19px 13px 12px;border:4px solid #76ae78;height:20px;border-radius:100px;position:relative;background:linear-gradient(90deg,#f4e1a4,#ffd989);box-shadow:inset 0 2px 2px #bd8d63}
+.mini-map-rail:before{content:"";position:absolute;top:7px;width:100%;border-top:2px dashed #fff}
+.mini-map-dot{position:absolute;top:-16px;left:0%;font-size:26px;filter:drop-shadow(0 2px 1px #be9478);transform:translateX(-50%);transition:left .12s linear}
+.mini-map-finish{position:absolute;right:-16px;top:-14px;font-size:24px}
+.mini-map-metric{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:#755f8f}
+.mini-map-metric strong{color:#af4692}
+.boost-panel{border:3px solid #e6c9f9;background:linear-gradient(120deg,#fff8d5,#ffe1f7);border-radius:15px;padding:10px;display:flex;gap:10px;margin-top:12px;align-items:center;min-height:69px;box-shadow:inset 0 2px 0 #ffffff}
+.boost-glyph{display:grid;place-items:center;border:2px solid #ffd152;background:#fff1a5;border-radius:50%;width:48px;height:48px;font-size:27px;flex:none}
+.boost-panel strong,.boost-panel span{display:block}.boost-panel strong{font-size:12px;color:#7d3299}.boost-panel div span{font-size:12px;color:#8d6596;margin-top:3px}.boost-panel.active{background:linear-gradient(110deg,#ffe163,#ffc68b,#e1a5fd);border-color:#f8a32e;animation:boing .32s alternate infinite}
+@keyframes boing{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+
 </style>
 </head>
 <body>
@@ -142,6 +156,12 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     </section>
     <aside class="card sidebar">
       <h2>🏆 Xếp hạng trực tiếp</h2><div id="scorelist" class="scorelist"></div>
+      <div class="mini-map" aria-label="Tiến trình đường đua">
+        <div class="mini-map-header">🗺️ BẢN ĐỒ ĐƯỜNG ĐUA <span>🏁</span></div>
+        <div class="mini-map-rail"><span id="mapDot" class="mini-map-dot">🐷</span><span class="mini-map-finish">🏁</span></div>
+        <div class="mini-map-metric"><span id="percentDone">0% đã hoàn thành</span><strong id="speedMeter">13.7 m/s</strong></div>
+      </div>
+      <div class="boost-panel" id="boostPanel"><span class="boost-glyph">⚡</span><div><strong id="boostTitle">SẴN SÀNG TĂNG TỐC</strong><span id="boostText">Gõ nhanh để BOOST!</span></div></div>
       <p class="tip"><strong>⭐ Luật demo:</strong> 6 heo chạy cùng tốc độ cơ bản. Các đối thủ máy tự trả lời. Bạn càng trả lời đúng sớm, BOOST càng mạnh trong 3 giây. Mọi heo vẫn chạy khi câu hỏi đang mở.</p>
       <p class="tip"><strong>🔉 Âm thanh:</strong> “ting” đúng từ, “boing” sai từ, “vút” tăng tốc, nhạc ngắn khi thắng hoặc thua. Âm được tạo bởi trình duyệt nên không cần tải tệp âm thanh.</p>
     </aside>
@@ -262,6 +282,8 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     if(frameId){cancelAnimationFrame(frameId);frameId=0;}
     racers.forEach(function(p,i){p.distance=0;p.speed=p.base;p.boost=0;p.boostUntil=0;p.finishTime=null;p.colorIndex=i;});
     particles=[];elapsed=0;round=0;lastFrame=0;nextQuestionDelay=0;isStarted=false;
+    el("mapDot").style.left="0%";el("percentDone").textContent="0% đã hoàn thành";el("speedMeter").textContent="13.7 m/s";
+    el("boostPanel").classList.remove("active");el("boostTitle").textContent="SẴN SÀNG TĂNG TỐC";el("boostText").textContent="Gõ nhanh để BOOST!";
     state="ready";el("changePig").disabled=false;challengeDone=false;answer.value="";answer.disabled=true;el("submit").disabled=true;
     el("clock").textContent="00:00.0";el("lap").textContent="1/3";el("qtime").textContent="⏳ 8.0 giây";el("raceInfo").textContent="Sẵn sàng xuất phát";el("myPigName").textContent=racers[0].name;
     promptNode.textContent="Ấn “BẮT ĐẦU ĐUA” để nhận câu đầu tiên.";
@@ -425,6 +447,13 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     particles=particles.filter(function(p){return p.life>0;}).slice(-200);
     if(racers.every(function(p){return p.finishTime!==null;})){endRace();}
     if(elapsed-lastScoreUpdate>.12){lastScoreUpdate=elapsed;updateScore();}
+    el("mapDot").style.left=(racers[0].distance/totalDistance*100).toFixed(2)+"%";
+    el("percentDone").textContent=Math.floor(racers[0].distance/totalDistance*100)+"% đã hoàn thành";
+    el("speedMeter").textContent=racers[0].speed.toFixed(1)+" m/s";
+    var activeBoost=racers[0].boostUntil>elapsed;
+    el("boostPanel").classList.toggle("active",activeBoost);
+    el("boostTitle").textContent=activeBoost?"⚡ BOOST ĐANG KÍCH HOẠT":"SẴN SÀNG TĂNG TỐC";
+    el("boostText").textContent=activeBoost?"+"+racers[0].boost.toFixed(1)+" m/s · "+(racers[0].boostUntil-elapsed).toFixed(1)+" giây":"Gõ nhanh để BOOST!";
     var remain=Math.max(0,qDuration-(elapsed-questionStarted));
     var tenth=Math.floor(remain*10);
     if(tenth!==lastQuestionTime){
@@ -621,9 +650,11 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
       var name=document.createElement("span");name.className="skin-name";name.textContent=p.name;
       var tag=document.createElement("span");tag.className="skin-tag";tag.textContent=p.tagline;
       card.append(icon,name,tag);card.addEventListener("click",function(){
+        var lastSkinName=pigRoster[selectedPigId].name;
+        var useSkinName=el("pigName").value===profileName||el("pigName").value===lastSkinName||!el("pigName").value.trim();
         selectedPigId=p.id;refreshRoster();
         el("chosenInfo").textContent="⭐ "+p.name+" — "+p.tagline;
-        if(el("pigName").value===profileName || !el("pigName").value.trim())el("pigName").value=p.name;
+        if(useSkinName)el("pigName").value=p.name;
       });
       group.append(card);
     });
