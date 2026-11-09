@@ -110,6 +110,39 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
 .boost-panel strong,.boost-panel span{display:block}.boost-panel strong{font-size:12px;color:#7d3299}.boost-panel div span{font-size:12px;color:#8d6596;margin-top:3px}.boost-panel.active{background:linear-gradient(110deg,#ffe163,#ffc68b,#e1a5fd);border-color:#f8a32e;animation:boing .32s alternate infinite}
 @keyframes boing{from{transform:translateY(0)}to{transform:translateY(-2px)}}
 
+
+/* Art-direction alignment with the illustrated reference: arcade overlay and glossy HUD. */
+.layout{position:relative;display:block}
+.layout>.card:first-child{width:100%}
+.layout .sidebar{position:absolute;z-index:3;left:12px;top:62px;width:226px;max-height:calc(100% - 104px);overflow:auto;padding:10px;background:linear-gradient(170deg,#3b275edc,#302146eb);border:3px solid #ad8de9;color:#fff;box-shadow:0 6px 18px #28154ba3;backdrop-filter:blur(6px)}
+.sidebar h2{font-size:16px;margin-bottom:7px;padding:8px 4px;background:linear-gradient(#9b50c8,#603597)}
+.sidebar .racer{color:#fff;padding:7px 4px;border-bottom:1px solid #ffffff31;border-radius:9px}
+.sidebar .racer.me{color:#58316f}
+.sidebar .racer .meter{color:#ffe4a0;font-size:11px}
+.sidebar .racer.me .meter{color:#a25368}
+.sidebar .tip{display:none}
+.sidebar .mini-map{margin-top:9px;padding:8px;border-color:#a281e0}
+.sidebar .mini-map-header{font-size:11px}
+.sidebar .mini-map-metric{font-size:10px;flex-wrap:wrap}
+.sidebar .boost-panel{margin-top:8px;padding:7px;min-height:53px}
+.sidebar .boost-glyph{width:34px;height:34px;font-size:21px}
+.sidebar .boost-panel strong{font-size:10px}
+.sidebar .boost-panel div span{font-size:10px}
+.challenge{position:relative;z-index:4;width:min(1100px,95%);margin:-26px auto 20px;border:5px solid #9c5bd2;border-radius:34px;box-shadow:0 7px 0 #6842a6,0 12px 28px #6344ae7c;background:linear-gradient(155deg,#e3bcfa,#f4dbff 46%,#e0c1ff)}
+.challenge h2{background:linear-gradient(#8f55c8,#60369e);color:#fff;padding:10px 16px;border-radius:100px;border:3px solid #e2c2ff;text-shadow:0 2px #442474}
+.prompt{background:linear-gradient(#fff,#ede2ff);border:4px solid #ad86dc;font-weight:1000;letter-spacing:.1px;color:#342a69}
+.challenge .typearea input{border:4px solid #8c53c7;box-shadow:0 0 0 3px #ffffff,0 4px #b085db}
+.top{margin-bottom:6px}.pill{background:linear-gradient(140deg,#3d2c83,#292054);color:#fff;border:2px solid #a795e4}.pill b{color:#fff1a2}
+.arena-bar{border-radius:0;background:linear-gradient(90deg,#573c9b,#bd65ca,#ed965f)}
+.canvaswrap{background:#a6e5ef}
+.footer{color:#55347c}
+@media(max-width:1000px){
+.layout{display:grid;grid-template-columns:1fr}
+.layout .sidebar{position:static;width:auto;max-height:none;overflow:visible;margin-top:12px;background:linear-gradient(140deg,#553c8e,#6e4aab)}
+.sidebar .tip{display:block;color:#efdcff}
+.challenge{margin:15px auto}
+}
+
 </style>
 </head>
 <body>
@@ -189,6 +222,10 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
 (function () {
   "use strict";
   var canvas = document.getElementById("track");
+  var farmArt = new Image();
+  farmArt.onload = function(){if(state!=="running")paint(elapsed);};
+  farmArt.onerror = function(){console.info("Farm SVG unavailable; use fallback artwork.");};
+  farmArt.src = "./assets/scenes/race-farm.svg";
   var ctx = canvas.getContext("2d");
   var answer = document.getElementById("answer");
   var promptNode = document.getElementById("prompt");
@@ -500,10 +537,15 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     }
     // Curly tail.
     ctx.strokeStyle="#b76a78";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-33,0);ctx.bezierCurveTo(-60,-22,-68,12,-48,6);ctx.bezierCurveTo(-35,-3,-55,-10,-55,1);ctx.stroke();
-    // Body: unique silhouette variants.
-    ctx.fillStyle=p.color;ctx.strokeStyle="#a35b66";ctx.lineWidth=3;
+    // Glossy volumetric body, shadows and character-specific silhouettes.
+    var bodyGlow=ctx.createRadialGradient(-15,-15,3,0,0,49);
+    bodyGlow.addColorStop(0,"#fff0e9");
+    bodyGlow.addColorStop(.34,p.color);
+    bodyGlow.addColorStop(1,"#9a5569");
+    ctx.fillStyle=bodyGlow;ctx.strokeStyle="#874259";ctx.lineWidth=3;
     ctx.beginPath();ctx.ellipse(0,0,p.kind==="muscle"?38:33,p.kind==="muscle"?25:24,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-    ctx.fillStyle="#fff9";ctx.beginPath();ctx.ellipse(-4,9,19,10,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#ffe5ddba";ctx.beginPath();ctx.ellipse(-9,9,18,9,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#ffffff9a";ctx.beginPath();ctx.ellipse(-13,-13,15,6,-.35,0,Math.PI*2);ctx.fill();
     // Stripe pattern, rainbow, muscle.
     if(p.kind==="stripe"){ctx.strokeStyle="#77503e";ctx.lineWidth=6;for(var t=-18;t<=13;t+=14){ctx.beginPath();ctx.moveTo(t-8,-16);ctx.lineTo(t+10,17);ctx.stroke();}}
     if(p.kind==="spot"){ctx.fillStyle="#403947";for(var d=0;d<3;d++){ctx.beginPath();ctx.ellipse(-20+d*17,-7+(d%2)*12,7,6,d*.1,0,Math.PI*2);ctx.fill();}}
@@ -515,9 +557,16 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     ctx.beginPath();ctx.moveTo(24,-14);ctx.lineTo(34,-29);ctx.lineTo(41,-7);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(25,-9,6.5,7.5,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle="#333048";ctx.beginPath();ctx.arc(28,-9,3.3,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#f9b1b7";ctx.strokeStyle="#a85b72";ctx.lineWidth=2;
+    // Blushing cheek, eyebrow, grin, large glossy snout.
+    ctx.fillStyle="#f26e8f88";ctx.beginPath();ctx.arc(16,6,8,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#5d374b";ctx.lineWidth=2.7;ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(17,-19);ctx.quadraticCurveTo(27,-23,32,-17);ctx.stroke();
+    ctx.beginPath();ctx.arc(22,13,8,.1,2.6);ctx.stroke();
+    ctx.fillStyle="#ffbcc5";ctx.strokeStyle="#a85b72";ctx.lineWidth=2;
     ctx.beginPath();ctx.ellipse(41,5,15,12,0,0,Math.PI*2);ctx.fill();ctx.stroke();
     ctx.fillStyle="#b65b74";ctx.beginPath();ctx.ellipse(36,5,2.5,3.6,0,0,Math.PI*2);ctx.ellipse(46,5,2.5,3.6,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#ffffff88";ctx.beginPath();ctx.ellipse(36,-2,8,2.5,-.1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(27,-11,1.6,0,Math.PI*2);ctx.fill();
     if(p.kind==="lightning"){ctx.strokeStyle="#ffd643";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-22,-10);ctx.lineTo(-8,0);ctx.lineTo(-17,13);ctx.lineTo(11,0);ctx.stroke();}
     if(p.kind==="punk"){ctx.fillStyle="#df4eac";for(var k=0;k<5;k++){ctx.beginPath();ctx.moveTo(-25+k*9,-17);ctx.lineTo(-30+k*9,-38-(k%2)*7);ctx.lineTo(-13+k*9,-16);ctx.fill();}}
     if(p.kind==="ninja"){ctx.fillStyle="#403b65";roundedRect(0,-20,37,10,4);ctx.fill();}
@@ -532,53 +581,58 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
   }
   function paint(time){
     ctx.clearRect(0,0,1200,620);
-    var sky=ctx.createLinearGradient(0,0,0,140);
-    sky.addColorStop(0,"#7fd4fe");sky.addColorStop(1,"#f6fcff");
-    ctx.fillStyle=sky;ctx.fillRect(0,0,1200,132);
-    // Farm backdrop: hills, barn, clouds.
-    ctx.fillStyle="#79cc7d";
-    for(var h=-1;h<7;h++){ctx.beginPath();ctx.ellipse(h*240+140,133,170,55,0,Math.PI,Math.PI*2);ctx.fill();}
-    ctx.fillStyle="#fa8c72";ctx.fillRect(900,45,95,85);
-    ctx.fillStyle="#b94f62";ctx.beginPath();ctx.moveTo(889,45);ctx.lineTo(948,5);ctx.lineTo(1007,45);ctx.fill();
-    ctx.fillStyle="#fff4e8";ctx.fillRect(933,74,27,56);
-    ctx.fillStyle="#fff";
-    for(var c=0;c<5;c++){var cx=(c*270+70+time*5)%1350-90;ctx.beginPath();ctx.ellipse(cx,30+c%2*21,55,16,0,0,Math.PI*2);ctx.fill();}
-
-    // Colorful barn sign, bunting and cheering crowd evoke the key art.
-    ctx.font="26px system-ui";ctx.textAlign="center";
-    for(var fan=0;fan<35;fan++){
-      var fx=fan*34+12, fy=104+Math.sin(fan*1.7)*6;
-      ctx.fillStyle=fan%3===0?"#f7b1b8":fan%3===1?"#ffd35a":"#bc8aee";
-      ctx.beginPath();ctx.arc(fx,fy,9,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#fce8b9";ctx.fillRect(fx-6,fy+7,13,10);
-      ctx.fillStyle="#302446";ctx.fillRect(fx-3,fy-1,2,2);ctx.fillRect(fx+3,fy-1,2,2);
+    if(farmArt.complete && farmArt.naturalWidth) {
+      ctx.drawImage(farmArt,0,0,1200,620);
+    } else {
+      var sky=ctx.createLinearGradient(0,0,0,140);
+      sky.addColorStop(0,"#7fd4fe");sky.addColorStop(1,"#f6fcff");
+      ctx.fillStyle=sky;ctx.fillRect(0,0,1200,132);
+      // Farm backdrop: hills, barn, clouds.
+      ctx.fillStyle="#79cc7d";
+      for(var h=-1;h<7;h++){ctx.beginPath();ctx.ellipse(h*240+140,133,170,55,0,Math.PI,Math.PI*2);ctx.fill();}
+      ctx.fillStyle="#fa8c72";ctx.fillRect(900,45,95,85);
+      ctx.fillStyle="#b94f62";ctx.beginPath();ctx.moveTo(889,45);ctx.lineTo(948,5);ctx.lineTo(1007,45);ctx.fill();
+      ctx.fillStyle="#fff4e8";ctx.fillRect(933,74,27,56);
+      ctx.fillStyle="#fff";
+      for(var c=0;c<5;c++){var cx=(c*270+70+time*5)%1350-90;ctx.beginPath();ctx.ellipse(cx,30+c%2*21,55,16,0,0,Math.PI*2);ctx.fill();}
+  
+      // Colorful barn sign, bunting and cheering crowd evoke the key art.
+      ctx.font="26px system-ui";ctx.textAlign="center";
+      for(var fan=0;fan<35;fan++){
+        var fx=fan*34+12, fy=104+Math.sin(fan*1.7)*6;
+        ctx.fillStyle=fan%3===0?"#f7b1b8":fan%3===1?"#ffd35a":"#bc8aee";
+        ctx.beginPath();ctx.arc(fx,fy,9,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle="#fce8b9";ctx.fillRect(fx-6,fy+7,13,10);
+        ctx.fillStyle="#302446";ctx.fillRect(fx-3,fy-1,2,2);ctx.fillRect(fx+3,fy-1,2,2);
+      }
+      ctx.strokeStyle="#af794d";ctx.lineWidth=5;
+      ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(1200,115);ctx.stroke();
+      ctx.fillStyle="#689e44";ctx.fillRect(0,122,1200,21);
+  
     }
-    ctx.strokeStyle="#af794d";ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(1200,115);ctx.stroke();
-    ctx.fillStyle="#689e44";ctx.fillRect(0,122,1200,21);
     // Dirt track with six parallel lanes.
-    ctx.fillStyle="#deb28a";roundedRect(114,142,1034,451,20);ctx.fill();
+    ctx.fillStyle="rgba(177,94,52,.25)";roundedRect(226,158,930,426,22);ctx.fill();
+    ctx.strokeStyle="#f7e3b3";ctx.lineWidth=8;ctx.stroke();
     var laneH=450/racers.length;
     for(var i=0;i<racers.length;i++){
       var y=148+i*laneH;
-      ctx.fillStyle=i%2?"#f6d6ad":"#efd0a4";ctx.fillRect(119,y,1024,laneH);
-      ctx.strokeStyle="#fff8e5";ctx.setLineDash([14,10]);ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(119,y+laneH);ctx.lineTo(1144,y+laneH);ctx.stroke();ctx.setLineDash([]);
-      ctx.fillStyle="#815c80";ctx.font="bold 17px system-ui";ctx.textAlign="left";
-      ctx.fillText(racers[i].name.slice(0,13),13,y+laneH*.63);
+      ctx.fillStyle=i%2?"rgba(255,224,175,.30)":"rgba(255,241,208,.25)";ctx.fillRect(230,y,921,laneH);
+      ctx.strokeStyle="#fff9e5";ctx.setLineDash([14,10]);ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(230,y+laneH);ctx.lineTo(1150,y+laneH);ctx.stroke();ctx.setLineDash([]);
+
     }
     // Lap markers (continuous track progress, no teleporting at lap boundaries).
-    var startX=188,endX=1138,trackW=endX-startX;
+    var startX=275,endX=1124,trackW=endX-startX;
     for(var j=0;j<4;j++){
       var bx=startX+(j/3)*trackW;
       ctx.save();ctx.globalAlpha=j===3?1:.42;
-      ctx.fillStyle=(j===3?"#ffffff":"#ffffffa8");ctx.fillRect(bx-3,142,7,451);
+      ctx.fillStyle=(j===3?"#ffffff":"#ffffffa8");ctx.fillRect(bx-3,157,7,426);
       if(j===3){
-        for(var rr=0;rr<24;rr++){ctx.fillStyle=rr%2?"#161c2c":"#ffffff";ctx.fillRect(bx-13,145+rr*18.5,12,18.5);}
+        for(var rr=0;rr<24;rr++){ctx.fillStyle=rr%2?"#161c2c":"#ffffff";ctx.fillRect(bx-13,158+rr*17.5,12,17.5);}
       }
       ctx.restore();
       ctx.textAlign="center";ctx.font="900 16px system-ui";ctx.fillStyle="#633684";
-      ctx.fillText(j===0?"XUẤT PHÁT":j===3?"ĐÍCH":"VÒNG "+(j+1),bx,137);
+      ctx.fillText(j===0?"XUẤT PHÁT":j===3?"ĐÍCH":"VÒNG "+(j+1),bx,154);
     }
     // Dust puffs.
     particles.forEach(function(p){
@@ -589,14 +643,16 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     racers.forEach(function(p,i){
       var x=startX+(p.distance/totalDistance)*trackW;
       var y=148+(i+.5)*laneH;
-      ctx.fillStyle=p.me?"#fff0a2":"#ffffffd8";roundedRect(Math.max(118,x-52),y-38,p.me?100:90,18,9);ctx.fill();
-      ctx.font="bold 12px system-ui";ctx.fillStyle=p.me?"#783382":"#664969";ctx.textAlign="center";
-      ctx.fillText(p.me?"⭐ "+p.name:p.name,Math.max(164,x-5),y-25);
+      ctx.save();ctx.shadowColor=p.me?"#f7a021":"#3e2653";ctx.shadowBlur=8;
+      ctx.fillStyle=p.me?"#ffe26a":"#45285ecb";roundedRect(Math.max(244,x-48),y-36,p.me?113:98,22,11);ctx.fill();ctx.restore();
+      ctx.font="900 12px system-ui";ctx.fillStyle=p.me?"#6d326b":"#fff7e2";ctx.textAlign="center";
+      ctx.fillText((p.me?"⭐ ":"")+p.name.slice(0,13),Math.max(294,x+5),y-21);
       pig(x,y,p,time);
     });
     // Track progress and legend.
     ctx.fillStyle="#503270";ctx.font="bold 15px system-ui";ctx.textAlign="left";
-    ctx.fillText("🐽 Đường đua 3 vòng • Mỗi vạch lớn đánh dấu một vòng • Heo không dừng khi gõ",20,611);
+    ctx.fillStyle="#653b76";
+    ctx.fillText("🏁 BẦY HEO ĐUA • CHẠY LIÊN TỤC • 3 VÒNG",220,609);
   }
   function frame(now){
     if(state!=="running")return;
