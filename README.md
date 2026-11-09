@@ -43,6 +43,19 @@ Game đua heo trực tuyến nhiều người chơi với hai chế độ **Đua
 
 **Kiến trúc chính:** Server authoritative — máy chủ xử lý tốc độ, vị trí, xếp hạng, câu trả lời và quỹ điểm. Client chỉ gửi thao tác và dựng hoạt ảnh.
 
+## 🌐 GitHub Pages
+
+**Trang game (sau khi bật Pages):** https://hanfun.github.io/dua_heo/
+
+Repository đã có `index.html` và workflow [`pages.yml`](.github/workflows/pages.yml). **Cần một lần bật Pages thủ công** vì GitHub không tự tạo trang qua `GITHUB_TOKEN` mặc định:
+
+1. Mở [Settings → Pages](https://github.com/hanfun/dua_heo/settings/pages).
+2. Ở **Build and deployment → Source**, chọn **GitHub Actions** (không chọn Deploy from a branch).
+3. Mở [Actions → Deploy Pig Racing to GitHub Pages](https://github.com/hanfun/dua_heo/actions/workflows/pages.yml), nhấn **Run workflow** trên nhánh `main` (hoặc re-run run bị lỗi).
+4. Kiểm tra job xanh và thử mở trang game phía trên.
+
+**Nếu thấy `Get Pages site failed: Not Found`**: bước 2 chưa hoàn thành. Không sửa lỗi này chỉ bằng `enablement: true` khi dùng `GITHUB_TOKEN` mặc định.
+
 ## 🐷 Demo thử nghiệm V2 — Đặt tên heo và đua 3 vòng
 
 **[TẢI / MỞ DEMO V2 (HTML)](prototype/pig-racing-v2.html)** · **[Hướng dẫn chạy và giới hạn prototype](docs/PROTOTYPE_V2.md)**
