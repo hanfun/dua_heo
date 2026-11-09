@@ -48,6 +48,7 @@ Game đua heo trực tuyến nhiều người chơi với hai chế độ **Đua
 - **[Mở mã nguồn demo đua heo](prototype/challenge-race.html)** — file HTML độc lập, tải về và mở bằng trình duyệt, **không cần cài đặt**.
 - Có 6 heo hoạt hình chạy liên tục qua 3 vòng, gõ chữ **đúng tô xanh / sai tô đỏ**, phép tính, BOOST và âm thanh vui nhộn tự tạo.
 - **[Thiết kế đường đua, hiệu ứng và nguồn âm thanh CC0](docs/TRACK_UX_SOUND.md)**.
+- **[Dữ liệu 20 heo (JSON)](assets/pigs/pig-roster.json)** — tên, lời giới thiệu, kiểu thân, màu sắc, họa tiết, phụ kiện và các trạng thái hoạt ảnh.
 - Demo là **single-player với 5 đối thủ máy**, chưa phải game online realtime. Kiến trúc chính thức vẫn dùng TypeScript + Phaser + NestJS.
 
 ## Tài liệu chi tiết
