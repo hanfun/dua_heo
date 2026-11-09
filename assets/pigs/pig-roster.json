@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "description": "Dữ liệu nhân vật Bầy Heo Đua: thẩm mỹ, không ảnh hưởng đến vận tốc/khả năng thắng",
+  "characters": [
+    {
+      "id": "u-nu",
+      "index": 1,
+      "name": "Ú Nụ",
+      "tagline": "Mập mà lao nhanh",
+      "bodyShape": "fat",
+      "baseColor": "#ffa6b6",
+      "pattern": "solid",
+      "accessory": "áo đua đỏ số 1",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "ti-teo",
+      "index": 2,
+      "name": "Tí Teo",
+      "tagline": "Ốm nhưng lướt gió",
+      "bodyShape": "skinny",
+      "baseColor": "#ffc09f",
+      "pattern": "solid",
+      "accessory": "kính phi công",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "co-bap",
+      "index": 3,
+      "name": "Cơ Bắp",
+      "tagline": "Nổ cơ là chạy",
+      "bodyShape": "muscular",
+      "baseColor": "#eb8c87",
+      "pattern": "solid",
+      "accessory": "băng đô đỏ và tạ tay",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "van-ven",
+      "index": 4,
+      "name": "Vằn Vện",
+      "tagline": "Sọc càng, càng ngầu",
+      "bodyShape": "sporty",
+      "baseColor": "#e7b58d",
+      "pattern": "tiger-stripes",
+      "accessory": "khăn xanh",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "dom-den",
+      "index": 5,
+      "name": "Đốm Đen",
+      "tagline": "Chạy kiểu bí ẩn",
+      "bodyShape": "round",
+      "baseColor": "#fff6ec",
+      "pattern": "cow-spots",
+      "accessory": "kính đen",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "toc-dung",
+      "index": 6,
+      "name": "Tóc Dựng",
+      "tagline": "Punk từ chuồng ra",
+      "bodyShape": "standard",
+      "baseColor": "#e989a1",
+      "pattern": "solid",
+      "accessory": "tóc punk hồng",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "ngai-ngu",
+      "index": 7,
+      "name": "Ngái Ngủ",
+      "tagline": "Mơ mà vẫn thắng",
+      "bodyShape": "round",
+      "baseColor": "#f9b0ba",
+      "pattern": "solid",
+      "accessory": "mũ ngủ ngôi sao",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "kieu-sa",
+      "index": 8,
+      "name": "Kiêu Sa",
+      "tagline": "Đẹp trước, đua sau",
+      "bodyShape": "standard",
+      "baseColor": "#f3a1bd",
+      "pattern": "solid",
+      "accessory": "vương miện và áo lông",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "luc-dien",
+      "index": 9,
+      "name": "Lực Điền",
+      "tagline": "Ủn một cái là bay",
+      "bodyShape": "muscular",
+      "baseColor": "#db8f7d",
+      "pattern": "solid",
+      "accessory": "giáp vai gai",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "tia-chop",
+      "index": 10,
+      "name": "Tia Chớp",
+      "tagline": "Nhanh như điện giật",
+      "bodyShape": "athletic",
+      "baseColor": "#74a7ed",
+      "pattern": "lightning",
+      "accessory": "kính thể thao",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "lo-ngo",
+      "index": 11,
+      "name": "Lơ Ngơ",
+      "tagline": "Chậm đầu, nhanh chân",
+      "bodyShape": "round",
+      "baseColor": "#f1a1aa",
+      "pattern": "solid",
+      "accessory": "mũ cánh quạt",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "quy-toc",
+      "index": 12,
+      "name": "Quý Tộc",
+      "tagline": "Chuẩn heo nhà giàu",
+      "bodyShape": "standard",
+      "baseColor": "#c58d97",
+      "pattern": "solid",
+      "accessory": "áo choàng và gậy",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "lem-linh",
+      "index": 13,
+      "name": "Lém Lỉnh",
+      "tagline": "Nhìn hiền mà láu",
+      "bodyShape": "small",
+      "baseColor": "#de959b",
+      "pattern": "solid",
+      "accessory": "mặt nạ đạo chích",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "giao-su",
+      "index": 14,
+      "name": "Giáo Sư",
+      "tagline": "Thông minh tăng tốc",
+      "bodyShape": "skinny",
+      "baseColor": "#efb5a8",
+      "pattern": "solid",
+      "accessory": "kính tròn và sách",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "bac-nong",
+      "index": 15,
+      "name": "Bác Nông",
+      "tagline": "Từ trại ra đường",
+      "bodyShape": "round",
+      "baseColor": "#edac9b",
+      "pattern": "solid",
+      "accessory": "mũ rơm và yếm",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "an-than",
+      "index": 16,
+      "name": "Ẩn Thân",
+      "tagline": "Thoắt cái vượt mặt",
+      "bodyShape": "athletic",
+      "baseColor": "#9790a4",
+      "pattern": "solid",
+      "accessory": "đồ ninja đen",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "cau-vong",
+      "index": 17,
+      "name": "Cầu Vồng",
+      "tagline": "Màu mè nhưng chất",
+      "bodyShape": "round",
+      "baseColor": "#e4a0db",
+      "pattern": "rainbow",
+      "accessory": "kính trái tim",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "heo-vua",
+      "index": 18,
+      "name": "Heo Vua",
+      "tagline": "Oai nhất đường đua",
+      "bodyShape": "round",
+      "baseColor": "#f3a7a4",
+      "pattern": "solid",
+      "accessory": "vương miện và áo hoàng bào",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "chan-dai",
+      "index": 19,
+      "name": "Chân Dài",
+      "tagline": "Sải bước ăn tiền",
+      "bodyShape": "tall",
+      "baseColor": "#e8b5b3",
+      "pattern": "solid",
+      "accessory": "kính thời trang và nơ",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    },
+    {
+      "id": "banh-bao",
+      "index": 20,
+      "name": "Bánh Bao",
+      "tagline": "Tròn vo siêu cưng",
+      "bodyShape": "extra-round",
+      "baseColor": "#ffbbc2",
+      "pattern": "solid",
+      "accessory": "mũ đầu bếp",
+      "animationSet": [
+        "idle",
+        "run",
+        "boost",
+        "celebrate",
+        "lose"
+      ]
+    }
+  ]
+}
