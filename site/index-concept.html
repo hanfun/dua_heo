@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#56318a">
+<title>BẦY HEO ĐUA · Đấu trường thử thách</title>
+<meta name="description" content="Bầy Heo Đua: chọn 20 heo, tự đặt tên, gõ chữ hoặc làm toán để tăng tốc!">
+<link rel="stylesheet" href="./site/style.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage" class="stage">
+    <div class="farm-backdrop"></div>
+    <canvas id="raceCanvas" width="1600" height="900" aria-label="Đường đua nông trại 8 heo"></canvas>
+    <header class="hud-header">
+      <div class="brand">
+        <div class="brand-flags">🏁</div><div class="brand-text">BẦY HEO ĐUA</div><div class="brand-flags">🏁</div>
+        <span class="brand-ribbon">Chế độ Thử Thách - Gõ Chữ Siêu Tốc</span>
+      </div>
+      <div id="lapBox" class="wood-sign">Vòng <b id="lapLabel">1/3</b></div>
+      <div class="distance-pill">🏁 <span>Quãng đường: <b id="distanceValue">0 / 2.000 m</b></span></div>
+      <div class="clock-pill">⏱ <span id="raceClock">00:00.0</span></div>
+      <div class="top-icons">
+        <button id="soundBtn" class="round-btn" title="Bật tắt âm thanh" aria-label="Bật tắt âm thanh" type="button">🔊</button>
+        <button id="musicBtn" class="round-btn" title="Bật tắt nhạc nền" aria-label="Bật tắt nhạc nền" type="button">🎵</button>
+        <button id="settingsBtn" class="round-btn" title="Chọn heo và đặt tên" aria-label="Chọn heo và đặt tên" type="button">⚙</button>
+      </div>
+    </header>
+
+    <aside class="leaderboard" aria-label="Bảng xếp hạng">
+      <h2>Bảng Xếp Hạng <small>(Hiện tại)</small></h2>
+      <div id="rankList" class="rank-list"></div>
+      <div class="leader-foot">🐽 Bầy heo đang bứt tốc!</div>
+    </aside>
+    <aside class="right-hud">
+      <section class="map-panel">
+        <h2>Bản đồ đường đua</h2>
+        <svg class="map-path" viewBox="0 0 190 110" aria-hidden="true">
+          <path d="M34 17 C8 18 10 60 33 74 C53 90 123 89 152 73 C180 56 164 23 143 19 C118 11 58 12 34 17Z" stroke="#56364d" stroke-width="27" fill="none"/>
+          <path d="M34 17 C8 18 10 60 33 74 C53 90 123 89 152 73 C180 56 164 23 143 19 C118 11 58 12 34 17Z" stroke="#fff9e7" stroke-width="17" fill="none"/>
+          <path d="M34 17 C8 18 10 60 33 74 C53 90 123 89 152 73 C180 56 164 23 143 19 C118 11 58 12 34 17Z" stroke="#b77946" stroke-width="12" fill="none"/>
+          <path id="mapLine" d="M34 17 C8 18 10 60 33 74 C53 90 123 89 152 73 C180 56 164 23 143 19 C118 11 58 12 34 17Z" fill="none" stroke="transparent" stroke-width="1"/>
+          <g id="mapDots"></g>
+          <g transform="translate(156 52)" fill="#111"><path d="M0 0h17v23H0z" fill="#fff"/><path d="M0 0h8v8H0zM8 8h9v8H8zM0 16h8v7H0z"/></g>
+        </svg>
+      </section>
+      <section class="gap-panel"><h2>Khoảng cách</h2><div id="gapList"></div></section>
+    </aside>
+
+    <div class="track-banner">🏁 ĐƯỜNG ĐUA NÔNG TRẠI</div>
+    <div id="bubbleMessage" class="bubble-message">🐷 Các chiến binh sẵn sàng!</div>
+    <div class="finish-arch"><div class="finish-title">ĐÍCH</div><span>🏁</span></div>
+    <div id="raceCallout" class="race-callout">⚡ BỨT TỐC!</div>
+
+    <section class="mode-panel">
+      <h3>Loại thử thách:</h3>
+      <div class="mode-buttons">
+        <button id="typeMode" class="mode-btn chosen" type="button"><span>⌨️</span>Gõ chữ</button>
+        <button id="mathMode" class="mode-btn" type="button"><span>🧮</span>Tính toán</button>
+      </div>
+    </section>
+
+    <section class="challenge-panel">
+      <div class="player-profile"><div class="player-sparkles">✨⭐</div><img id="myPortrait" alt="Heo bạn chọn"><div id="myPigLabel" class="portrait-label">Cơ Bắp</div></div>
+      <div class="challenge-main">
+        <div class="challenge-top"><div class="challenge-ribbon">⌨️ &nbsp;THỬ THÁCH: <span id="challengeType">Gõ lại chính xác đoạn văn sau!</span></div><div id="timeLeft" class="question-timer">⌛ Còn: 12.0 giây</div></div>
+        <div id="questionText" class="question-display">Con heo cơ bắp đang bứt tốc về đích!</div>
+        <div class="answer-bar">
+          <input id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Gõ câu trả lời" disabled>
+          <div id="answerColor" class="answer-overlay" aria-hidden="true">Nhập câu trả lời ở đây...</div>
+        </div>
+        <div id="answerFeedback" class="answer-feedback" aria-live="polite">Nhấn Bắt đầu để nhận thử thách!</div>
+      </div>
+      <div class="boost-ui"><div class="boost-words">Tăng tốc!</div><div class="boost-wings">⚡</div><div id="boostValue" class="boost-value">+0.0 m/s</div><div id="boostDuration" class="boost-duration">SẴN SÀNG</div></div>
+      <div class="challenge-instructions"><span>✅ Gõ đúng: chữ tô xanh</span><span>❌ Gõ sai: chữ tô đỏ</span><span>🏁 Hoàn thành cả câu để nhận tăng tốc!</span></div>
+    </section>
+    <footer class="sound-bar"><div class="sound-header">🔊 &nbsp;Hệ thống âm<br>thanh vui nhộn</div><div class="sound-cue">⌨️ <span>Âm gõ phím:<small>tách tách tách...</small></span></div><div class="sound-cue">✅ <span>Gõ đúng:<small>ting! (vui, nhẹ nhàng)</small></span></div><div class="sound-cue">❌ <span>Gõ sai:<small>bíp! (hài hước)</small></span></div><div class="sound-cue">⚡ <span>Tăng tốc:<small>vút! (boost)</small></span></div><div class="sound-cue">🏆 <span>Chiến thắng:<small>fanfare!</small></span></div><div class="sound-cue">🐽 <span>Thất bại:<small>hụt!... (vui nhộn)</small></span></div></footer>
+
+    <div id="startOverlay" class="overlay">
+      <div class="result-card"><div class="overlay-stars">⭐ 🏆 ⭐</div><h2 id="resultHeading">BẦY HEO ĐUA!</h2><p id="resultMessage">Chọn nhân vật, đặt tên và gõ thật nhanh để vượt đối thủ!</p><button id="playBtn" class="primary-btn" type="button">🚀 BẮT ĐẦU ĐUA</button><button id="changeBtn" class="secondary-btn" type="button">🎨 CHỌN HEO & ĐẶT TÊN</button></div>
+    </div>
+
+    <div id="pickerModal" class="picker-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+      <div class="picker-card">
+        <header class="picker-header"><span>🐷 20 CHIẾN BINH VUI NHỘN</span><h2 id="pickerTitle">CHỌN HEO CỦA BẠN!</h2><p>Tự đặt tên, chọn ngoại hình và mang chiến binh ra đường đua.</p></header>
+        <div class="picker-inner"><div class="picker-form"><label for="pigNameInput">✏️ TÊN HEO CỦA BẠN (2–18 KÝ TỰ)</label><input id="pigNameInput" type="text" maxlength="18" placeholder="Ví dụ: Heo Siêu Quậy" autocomplete="off" spellcheck="false"><span id="nameError" class="name-error"></span><label class="upload-avatar">📸 Avatar (tùy chọn) <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp"></label><span id="selectedInfo" class="selected-info">Cơ Bắp — Nổ cơ là chạy</span></div><div id="pigGrid" class="pig-grid"></div></div>
+        <div class="picker-actions"><button id="pickerClose" type="button" class="secondary-btn">ĐÓNG</button><button id="pickerSave" type="button" class="primary-btn">✅ LƯU & SẴN SÀNG</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mobile-note">📱 Trải nghiệm game tốt nhất khi xoay màn hình ngang.</div>
+<script src="./site/pigs.js" defer></script>
+<script src="./site/game.js" defer></script>
+</body>
+</html>
