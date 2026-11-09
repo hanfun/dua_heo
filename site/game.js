@@ -73,6 +73,7 @@ function makeRacers(){
   offset:[0,140,335,440,240,580,520,680][i],depth:[390,280,328,425,209,465,245,176][i],
   visualScale:[1.35,.92,.98,1.1,.73,1.11,.78,.73][i]
  }));
+ for(const pig of racers)for(let frame=0;frame<6;frame++)picture(pig,frame);
  const dots=$("mapDots");dots.replaceChildren();
  racers.forEach((p,i)=>{
   let c=document.createElementNS("http://www.w3.org/2000/svg","circle");
