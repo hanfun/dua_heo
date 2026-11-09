@@ -411,7 +411,7 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
       ?"Heo của bạn đã bứt tốc vượt cả bầy! Xuất sắc!"
       :"Lần tới gõ nhanh hơn để giành ngôi đầu. Vui là chính!";
     el("start").textContent="🔁 ĐUA LẠI";
-    overlay.classList.remove("hidden");el("raceInfo").textContent="Đã kết thúc · Hạng "+rank+"/6";
+    overlay.classList.remove("hidden");el("raceInfo").textContent="Đã kết thúc · Hạng "+rank+"/"+racers.length;
     sfx(winning?"win":"lose");
     updateScore();
   }
