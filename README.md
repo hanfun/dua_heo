@@ -43,6 +43,16 @@ Game đua heo trực tuyến nhiều người chơi với hai chế độ **Đua
 
 **Kiến trúc chính:** Server authoritative — máy chủ xử lý tốc độ, vị trí, xếp hạng, câu trả lời và quỹ điểm. Client chỉ gửi thao tác và dựng hoạt ảnh.
 
+## 🐷 Demo thử nghiệm V2 — Đặt tên heo và đua 3 vòng
+
+**[TẢI / MỞ DEMO V2 (HTML)](prototype/pig-racing-v2.html)** · **[Hướng dẫn chạy và giới hạn prototype](docs/PROTOTYPE_V2.md)**
+
+- Chọn **1 trong 20 nhân vật** và **đặt tên riêng** (2–18 ký tự) trước khi đua. Tên lưu bằng localStorage.
+- Có avatar tùy chọn, bảng xếp hạng, mini-map, đồng hồ, tên người chơi, tốc độ và BOOST.
+- **8 heo chạy liên tục qua 3 vòng** trên đường đua nông trại; gõ đúng từ **xanh**, sai **đỏ**; kèm bài toán, âm thanh vui nhộn, thắng/thua.
+- **Demo offline, không cần thư viện hay cài đặt**. Mở file HTML trong Chrome/Edge/Firefox là chạy.
+- **Chưa phải multiplayer và chưa đạt chất lượng sprite 1:1 như tranh concept**; bản demo sử dụng Canvas 2D và đối thủ giả lập, dự định chuyển lên Phaser + TypeScript khi xác nhận giao diện.
+
 ## 🕹️ Xem thử bản đua heo tương tác
 
 - **[Mở mã nguồn demo đua heo](prototype/challenge-race.html)** — file HTML độc lập, tải về và mở bằng trình duyệt, **không cần cài đặt**.
