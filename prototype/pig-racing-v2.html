@@ -393,7 +393,7 @@ h1{font-family:system-ui,sans-serif;letter-spacing:-1.4px;color:#ffdf49;font-sty
     var rank=1+botTimes.slice(1).filter(function(t){return t<=rt;}).length;
     var boost=[8.5,7,6,5,4.4,3.8,3,2.5][Math.min(rank-1,7)];
     racers[0].boost=boost;racers[0].boostUntil=elapsed+boostedFor;
-    feedback.textContent="⚡ Đúng sau "+rt.toFixed(2)+"s • Hạng "+rank+"/6 • BOOST +"+boost.toFixed(1)+" m/s trong 3 giây!";
+    feedback.textContent="⚡ Đúng sau "+rt.toFixed(2)+"s • Hạng "+rank+"/"+racers.length+" • BOOST +"+boost.toFixed(1)+" m/s trong 3 giây!";
     sfx("boost");
   }
   function timeoutQuestion(){
