@@ -28,6 +28,8 @@ jobs:
       # Required one-time repo setting:
       # Settings > Pages > Build and deployment > Source = GitHub Actions
       # A default GITHUB_TOKEN cannot enable a Pages site automatically.
+      - name: Validate JavaScript and game challenge modes
+        run: node site/smoke-test.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload static website
