@@ -2,19 +2,30 @@
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const TOTAL=2000,LAP=TOTAL/3,BASE=30,QUESTION_SECONDS=12,BOOST_SECONDS=3;
+const TOTAL=2000,LAP=TOTAL/3,BASE=30,BOOST_SECONDS=3;
+const QUESTION_TIMES={typing:18,math:14};
 const BOOSTS=[12,10,8.5,7.2,6,4.7,3.5,2.4];
 const texts=[
-"Con heo cơ bắp đang bứt tốc về đích!",
-"Ú Nụ mập nhưng chạy nhanh như gió.",
-"Heo Cầu Vồng vừa vượt qua Bánh Bao!",
-"Đường đua nông trại thật náo nhiệt hôm nay.",
-"Chú heo đeo kính nhảy qua bờ rào xanh.",
-"The funny little pig is running very fast.",
-"A rainbow pig can win the race today.",
-"Nhanh tay gõ chữ để heo bứt tốc.",
-"Heo Tia Chớp phóng như tên lửa màu xanh.",
-"Con heo ninja thích ăn bánh bao buổi sáng."
+ "Heo chạy nhanh!",
+ "Bánh Bao bứt tốc!",
+ "Ninja vượt lên!",
+ "Ú Nụ về đích!",
+ "Tia Chớp thật nhanh!",
+ "Heo hồng chiến thắng!",
+ "Cố lên, heo con!",
+ "Cơ Bắp siêu tốc!",
+ "Vằn Vện dẫn đầu!",
+ "Heo tím tăng tốc!",
+ "Pig runs fast!",
+ "Go little pig!",
+ "Ready to race!",
+ "Fast and funny!",
+ "Run to win!",
+ "Heo đua vui quá!",
+ "Chạy nhanh nào!",
+ "Nông trại vui nhộn!",
+ "Mũm Mĩm cố lên!",
+ "Về đích thôi!"
 ];
 const canvas=$("raceCanvas"),ctx=canvas.getContext("2d");
 const roster=window.PIG_ROSTER,art=window.PigArt;
@@ -24,8 +35,8 @@ const mapPath=$("mapLine");
 let profile={id:2,name:"Cơ Bắp"},avatarURL=null;
 try {const old=JSON.parse(localStorage.getItem("pigRaceProfileV3")||"null");if(old && Number.isInteger(old.id)&&roster[old.id]&&typeof old.name==="string"&&old.name.length>=2)profile={id:old.id,name:old.name.slice(0,18)};}catch(e){}
 let selected=profile.id;
-let racers=[],particles=[],state="ready",mode="typing",question="",expectedAnswer=0,questionId=0;
-let qStart=0,qElapsed=0,gameClock=0,botTimes=[],botDone=[],userDone=false,wrongFiredAt=-10,correctWords=0;
+let racers=[],particles=[],state="ready",mode="typing",pendingMode=null,question="",expectedAnswer=0,questionId=0;
+let qStart=0,qElapsed=0,gameClock=0,answerCompletedAt=null,botTimes=[],botDone=[],userDone=false,wrongFiredAt=-10,correctWords=0;
 let frameHandle=0,lastTick=0,lastUi=0,composing=false,muted=false,music=false,musicTimer=0;
 let audio=null,flashUntil=0;
 let previousQuestion=-1;
@@ -158,11 +169,11 @@ function reset(){
  $("playBtn").textContent="🚀 BẮT ĐẦU ĐUA";
  $("resultHeading").textContent="BẦY HEO ĐUA!";
  $("resultMessage").textContent="Chọn heo, đặt tên, gõ chữ hoặc giải toán để tăng tốc qua 3 vòng!";
- $("answerInput").disabled=true;$("answerInput").value="";
+ $("answerInput").disabled=true;$("answerInput").value="";$("answerSubmit").disabled=true;
  $("answerColor").textContent="Nhấn Bắt đầu để nhận thử thách...";
- $("questionText").textContent="Con heo cơ bắp đang bứt tốc về đích!";
+ $("questionText").textContent=mode==="typing"?texts[0]:"25 + 17 = ?";
  $("answerFeedback").textContent="Gõ nhanh và chính xác để heo chạy nhanh hơn!";
- $("timeLeft").textContent="⌛ Còn: 12.0 giây";
+ $("timeLeft").textContent="⌛ Còn: "+QUESTION_TIMES[mode].toFixed(1)+" giây";
  $("boostValue").textContent="+0.0 m/s";$("boostDuration").textContent="SẴN SÀNG";
  setAvatar();drawRace(0);
 }
@@ -174,24 +185,30 @@ function start(){
  lastTick=performance.now();sfx("start");musicStart();frameHandle=requestAnimationFrame(tick);
 }
 function mathQuestion(){
- const a=3+Math.floor(Math.random()*80),b=2+Math.floor(Math.random()*17),op=["+","−","×","÷"][Math.floor(Math.random()*4)];
+ const a=10+Math.floor(Math.random()*40),b=2+Math.floor(Math.random()*9),op=["+","−","×","÷"][Math.floor(Math.random()*4)];
  if(op==="+"){expectedAnswer=a+b;return a+" + "+b+" = ?";}
  if(op==="−"){expectedAnswer=a-b;return a+" − "+b+" = ?";}
- if(op==="×"){expectedAnswer=a*b;return a+" × "+b+" = ?";}
- const quotient=2+Math.floor(Math.random()*16);
+ if(op==="×"){const x=2+Math.floor(Math.random()*8);expectedAnswer=x*b;return x+" × "+b+" = ?";}
+ const quotient=2+Math.floor(Math.random()*9);
  expectedAnswer=quotient;return (quotient*b)+" ÷ "+b+" = ?";
 }
 function nextQuestion(){
- questionId++;qStart=gameClock;qElapsed=0;userDone=false;botDone=Array(racers.length).fill(false);
- botTimes=racers.map((p,i)=>i===0?Infinity:2.0+Math.random()*8.5);
+ if(pendingMode){mode=pendingMode;pendingMode=null;}
+ syncModeButtons();
+ questionId++;qStart=gameClock;qElapsed=0;answerCompletedAt=null;userDone=false;botDone=Array(racers.length).fill(false);
+ const diff=mode==="math"?{min:3.4,range:9.2}:{min:4.5,range:10.5};
+ botTimes=racers.map((p,i)=>i===0?Infinity:diff.min+Math.random()*diff.range);
  question=mode==="typing"?texts[(questionId-1)%texts.length]:mathQuestion();
  correctWords=0;previousQuestion=-1;
  $("questionText").textContent=question;
- $("challengeType").textContent=mode==="typing"?"Gõ lại chính xác đoạn văn sau!":"Giải phép tính và nhập đáp án!";
+ $("challengeType").textContent=mode==="typing"?"Gõ chính xác câu ngắn sau!":"Tính nhanh và nhập kết quả!";
+ $("answerSubmit").textContent=mode==="math"?"GỬI ↵":"XONG ✓";
+ $("answerSubmit").disabled=false;
+ $("timeLeft").textContent="⌛ Còn: "+QUESTION_TIMES[mode].toFixed(1)+" giây";
  $("answerInput").value="";$("answerInput").disabled=false;
  $("answerInput").placeholder="";
  $("answerInput").setAttribute("inputmode",mode==="typing"?"text":"numeric");
- $("answerFeedback").textContent="🐷 Heo vẫn chạy khi bạn đang trả lời...";
+ $("answerFeedback").textContent=mode==="math"?"🧮 Tính kết quả rồi nhấn GỬI hoặc Enter!":"⌨️ Câu ngắn thôi! Gõ đúng để BOOST nhé!";
  colorWords();$("answerInput").focus();
 }
 function colorWords(){
@@ -225,8 +242,8 @@ function submit(){
  if(state!=="racing"||userDone)return;
  const typed=$("answerInput").value.normalize("NFC");
  let good=mode==="typing"?typed===question.normalize("NFC"):typed.trim()!==""&&Number(typed.trim())===expectedAnswer;
- if(!good){sfx("wrong");$("answerFeedback").textContent="❌ Chưa đúng! Sửa phần chữ đỏ hoặc kiểm tra kết quả.";return;}
- userDone=true;$("answerInput").disabled=true;
+ if(!good){sfx("wrong");$("answerFeedback").textContent=mode==="math"?"❌ Sai kết quả, hãy tính lại!":"❌ Chữ chưa khớp, sửa từ màu đỏ nhé!";return;}
+ userDone=true;answerCompletedAt=gameClock;$("answerInput").disabled=true;$("answerSubmit").disabled=true;
  const responseTime=gameClock-qStart;
  const rank=1+botTimes.slice(1).filter(t=>t<=responseTime).length;
  boost(racers[0],BOOSTS[Math.min(BOOSTS.length-1,rank-1)]);
@@ -237,7 +254,7 @@ function submit(){
 function boost(p,bonus){p.bonus=bonus;p.boostUntil=gameClock+BOOST_SECONDS;}
 function end(){
  if(state!=="racing")return;
- state="finished";$("answerInput").disabled=true;
+ state="finished";$("answerInput").disabled=true;$("answerSubmit").disabled=true;
  if(musicTimer){clearInterval(musicTimer);musicTimer=0;}
  const sorted=[...racers].sort((a,b)=>(a.finishAt??Infinity)-(b.finishAt??Infinity));
  const rank=sorted.indexOf(racers[0])+1,win=rank===1;
@@ -257,15 +274,15 @@ function tick(now){
  if(state!=="racing")return;
  const dt=Math.min(.05,Math.max(0,(now-lastTick)/1000));lastTick=now;gameClock+=dt;
  qElapsed=gameClock-qStart;
- if(qElapsed<QUESTION_SECONDS){
+ if(qElapsed<QUESTION_TIMES[mode]){
   racers.forEach((p,i)=>{
    if(i>0&&!botDone[i]&&qElapsed>=botTimes[i]){
     botDone[i]=true;const rank=1+botTimes.slice(1).filter(t=>t<botTimes[i]).length;
     boost(p,BOOSTS[Math.min(BOOSTS.length-1,rank-1)]);
    }
   });
- } else if(!userDone){userDone=true;$("answerInput").disabled=true;$("answerFeedback").textContent="⌛ Hết giờ! Hãy chờ câu tiếp theo."; }
- if(qElapsed>QUESTION_SECONDS+1)nextQuestion();
+ } else if(!userDone){userDone=true;$("answerInput").disabled=true;$("answerSubmit").disabled=true;$("answerFeedback").textContent="⌛ Hết giờ! Câu mới sẽ xuất hiện ngay."; }
+ if(qElapsed>QUESTION_TIMES[mode]+0.8 || (answerCompletedAt!==null && gameClock-answerCompletedAt>2.2 && qElapsed>4.0))nextQuestion();
  racers.forEach((p,i)=>{
   if(p.finishAt!==null)return;
   p.speed=BASE+(gameClock<p.boostUntil?p.bonus:0);
@@ -277,7 +294,7 @@ function tick(now){
   }
  });
  particles.forEach(p=>p.life-=dt);particles=particles.filter(p=>p.life>0).slice(-200);
- $("timeLeft").textContent="⌛ Còn: "+Math.max(0,QUESTION_SECONDS-qElapsed).toFixed(1)+" giây";
+ $("timeLeft").textContent="⌛ Còn: "+Math.max(0,QUESTION_TIMES[mode]-qElapsed).toFixed(1)+" giây";
  if(gameClock-lastUi>.16){lastUi=gameClock;updateRank();}
  drawRace(gameClock);
  if(racers.every(p=>p.finishAt!==null)){end();return;}
@@ -364,6 +381,9 @@ function keyEvents(){
  $("answerInput").addEventListener("compositionend",()=>{composing=false;onInput();});
  $("answerInput").addEventListener("input",onInput);
  $("answerInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();submit();}});
+ $("answerSubmit").addEventListener("click",submit);
+ $("startTypeMode").addEventListener("click",()=>setMode("typing"));
+ $("startMathMode").addEventListener("click",()=>setMode("math"));
  $("avatarInput").addEventListener("change",function(){
   const file=this.files&&this.files[0];if(!file)return;
   if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>2*1024*1024){$("nameError").textContent="Avatar chỉ nhận PNG/JPG/WebP dưới 2MB.";this.value="";return;}
@@ -371,13 +391,30 @@ function keyEvents(){
   avatarURL=URL.createObjectURL(file);
  });
 }
+function syncModeButtons(){
+ const shown=pendingMode||mode;
+ $("typeMode").classList.toggle("chosen",shown==="typing");
+ $("mathMode").classList.toggle("chosen",shown==="math");
+ $("startTypeMode").classList.toggle("chosen",shown==="typing");
+ $("startMathMode").classList.toggle("chosen",shown==="math");
+ $("startModeHint").textContent=shown==="math"?"🧮 Chế độ: Tính toán":"⌨️ Chế độ: Gõ chữ";
+}
 function setMode(next){
- if(state==="racing"){bubble("Đổi loại thử thách ở trận tiếp theo nhé!");return;}
- if(mode===next)return;mode=next;
- $("typeMode").classList.toggle("chosen",next==="typing");
- $("mathMode").classList.toggle("chosen",next==="math");
- if(state==="racing")nextQuestion();
- else {$("challengeType").textContent=next==="typing"?"Gõ lại chính xác đoạn văn sau!":"Giải phép tính và nhập đáp án!";$("questionText").textContent=next==="typing"?texts[0]:"25 + 17 = ?";}
+ if(mode===next && pendingMode===null)return;
+ if(state==="racing"){
+   pendingMode=next;
+   syncModeButtons();
+   $("answerFeedback").textContent=next==="math"
+     ?"🧮 Đã chọn Tính toán. Phép tính xuất hiện ở câu kế tiếp!"
+     :"⌨️ Đã chọn Gõ chữ. Câu ngắn sẽ xuất hiện ở lượt kế tiếp!";
+ }else{
+   mode=next;pendingMode=null;syncModeButtons();
+   $("challengeType").textContent=next==="typing"?"Gõ chính xác câu ngắn sau!":"Tính nhanh và nhập kết quả!";
+   $("questionText").textContent=next==="typing"?texts[0]:"25 + 17 = ?";
+   $("timeLeft").textContent="⌛ Còn: "+QUESTION_TIMES[next].toFixed(1)+" giây";
+   $("answerColor").textContent=next==="typing"?"Gõ lại câu ở phía trên...":"Nhập kết quả phép tính...";
+   $("answerFeedback").textContent=next==="typing"?"⌨️ Câu ngắn chỉ vài từ!":"🧮 Cộng, trừ, nhân, chia – đáp án là số nguyên!";
+ }
  sfx("click");
 }
 function onInput(){
@@ -394,5 +431,5 @@ function onInput(){
   if(typed===target)submit();
  }else if(typed.trim()!=="" && Number(typed)===expectedAnswer){submit();}
 }
-keyEvents();art.preload();makeRacers();reset();pickerOpen();
+keyEvents();art.preload();makeRacers();reset();syncModeButtons();pickerOpen();
 })();
