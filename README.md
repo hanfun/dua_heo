@@ -1,5 +1,16 @@
 # 🐷 ĐUA HEO — Pig Racing Arena
 
+## ✅ Cập nhật 15/11/2026 — Gõ ngắn và chế độ toán
+
+**[▶ Chơi bản cập nhật trên GitHub Pages](https://hanfun.github.io/dua_heo/)**
+
+- **Gõ chữ:** 20 câu tiếng Việt/Anh ngắn, tối đa **21 ký tự** (thay vì câu dài), được trả lời trong **18 giây**. Gõ đúng từ xanh, sai đỏ như trước.
+- **Tính toán:** có lựa chọn nổi bật ở màn **Bắt đầu đua**, thực hiện cộng / trừ / nhân / chia với số nhỏ và kết quả nguyên. Thời gian trả lời **14 giây**.
+- **Gửi kết quả toán:** nhập số và nhấn **GỬI ↵** hoặc Enter; kết quả đúng có thể tự nộp và nhận BOOST.
+- Khi đang chạy, chuyển giữa hai chế độ bằng các nút phía trái: **chế độ mới có hiệu lực từ câu tiếp theo**, để không mất câu đang trả lời.
+- Hoàn thành đúng câu sẽ có thử thách mới sau khoảng 2,2 giây (tối thiểu 4 giây kể từ khi mở câu), thay vì luôn phải đợi hết đồng hồ.
+- Tự động kiểm tra cấu trúc câu hỏi và nút chế độ bằng `node site/smoke-test.cjs` trước khi deploy.
+
 ## 🎮 ĐUA HEO ARCADE — GIAO DIỆN THEO ẢNH THIẾT KẾ
 
 **[▶ CHƠI NGAY TRÊN GITHUB PAGES](https://hanfun.github.io/dua_heo/)**
@@ -16,12 +27,12 @@ Bản game hiện tại là phiên bản giao diện mới, bám theo ảnh mẫ
 
 **Giới hạn hiện tại:** đây là demo **single-player + 7 heo bot** trên Canvas, chưa phải multiplayer hoặc Phaser; các nhân vật vector là phong cách gần ảnh thiết kế nhưng **không phải ảnh sprite 3D/chibi giống nguyên mẫu 100%**. Avatar chỉ dùng trên máy người chơi; demo chưa có backend. Giao diện 16:9 đẹp nhất ở màn hình ngang.
 
-**GitHub Pages:** workflow `.github/workflows/pages.yml` đã tự động triển khai thành công ngày 09/11/2026. Nếu có commit mới, đợi job ở [GitHub Actions](https://github.com/hanfun/dua_heo/actions/workflows/pages.yml) xanh rồi làm mới trang.
+**GitHub Pages:** workflow `.github/workflows/pages.yml` tự động kiểm tra và triển khai các thay đổi lên Pages. Nếu có commit mới, đợi job ở [GitHub Actions](https://github.com/hanfun/dua_heo/actions/workflows/pages.yml) xanh rồi làm mới trang.
 
 
 Game đua heo trực tuyến nhiều người chơi với hai chế độ **Đua may mắn (Auto Racing)** và **Đua thử thách (Challenge Racing)**.
 
-> **Trạng thái:** Giai đoạn 0 — tài liệu định hướng và lựa chọn công nghệ, chưa có code game chạy được.
+> **Trạng thái:** Có game demo single-player chạy trên GitHub Pages; multiplayer và chế độ Auto Racing chưa được lập trình.
 
 ## Hai chế độ chơi
 
