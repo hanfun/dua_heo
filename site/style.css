@@ -91,3 +91,23 @@ button:focus-visible,input:focus-visible,.pig-card:focus-visible{outline:4px sol
 .mobile-note{display:none}
 @media(max-aspect-ratio:10/9){.mobile-note{display:block;position:fixed;top:0;left:0;right:0;z-index:99;text-align:center;background:#ffdf6b;color:#5c358a;padding:4px;font-weight:bold;font-size:12px}}
 @media(prefers-reduced-motion:reduce){.boost-wings{animation:none}.race-callout.show{animation:none;opacity:1}}
+
+
+/* Challenge revision: visible mode selection and clearly actionable math submit. */
+.start-mode-wrap{margin:16px auto 12px;padding:11px 13px;border:2px solid #e3bdfa;border-radius:18px;background:#281b6282;max-width:560px}
+.start-mode-title{font-size:15px;font-weight:1000;color:#ffef9c;text-shadow:0 2px #593272;margin-bottom:7px}
+.start-mode-buttons{display:flex;gap:11px;justify-content:center}
+.start-mode-btn{min-width:0;flex:1;max-width:250px;padding:11px 8px;color:#fef6ff;border:3px solid #b7a3eb;border-radius:15px;background:linear-gradient(#68559d,#443076);font-size:17px;font-weight:1000;box-shadow:0 3px #352358}
+.start-mode-btn strong{font-size:18px}.start-mode-btn small{display:block;color:#eadcf9;font-size:12px;margin-top:5px}
+.start-mode-btn.chosen{border-color:#fff3a3;background:linear-gradient(#ffe578,#ffa93d);color:#73365c;box-shadow:0 4px #b86d33}
+.start-mode-btn.chosen small{color:#743c51}
+.start-mode-hint{font-size:12px;font-weight:900;color:#ffe6a1;padding-top:8px}
+.answer-bar input{padding-right:132px}
+.answer-overlay{right:138px}
+.answer-submit{position:absolute;z-index:4;right:7px;top:7px;bottom:7px;border:2px solid #ffed93;border-radius:13px;background:linear-gradient(#ffef7c,#ffa92c);color:#653168;font-weight:1000;font-size:17px;padding:0 15px;box-shadow:0 3px #b97534}
+.answer-submit:hover:not(:disabled){filter:brightness(1.08)}
+.answer-submit:disabled{opacity:.55}
+.mode-panel h3{font-size:13px;letter-spacing:-.3px;text-align:center}
+.result-card{width:640px;max-width:94%;padding:23px 25px}
+.result-card h2{font-size:32px}
+.result-card p{font-size:16px}
