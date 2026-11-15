@@ -54,21 +54,22 @@
     <div id="raceCallout" class="race-callout">⚡ BỨT TỐC!</div>
 
     <section class="mode-panel">
-      <h3>Loại thử thách:</h3>
+      <h3>CHỌN THỬ THÁCH</h3>
       <div class="mode-buttons">
         <button id="typeMode" class="mode-btn chosen" type="button"><span>⌨️</span>Gõ chữ</button>
-        <button id="mathMode" class="mode-btn" type="button"><span>🧮</span>Tính toán</button>
+        <button id="mathMode" class="mode-btn" type="button" title="Trả lời phép cộng, trừ, nhân, chia"><span>🧮</span>Tính toán</button>
       </div>
     </section>
 
     <section class="challenge-panel">
       <div class="player-profile"><div class="player-sparkles">✨⭐</div><img id="myPortrait" alt="Heo bạn chọn"><div id="myPigLabel" class="portrait-label">Cơ Bắp</div></div>
       <div class="challenge-main">
-        <div class="challenge-top"><div class="challenge-ribbon">⌨️ &nbsp;THỬ THÁCH: <span id="challengeType">Gõ lại chính xác đoạn văn sau!</span></div><div id="timeLeft" class="question-timer">⌛ Còn: 12.0 giây</div></div>
-        <div id="questionText" class="question-display">Con heo cơ bắp đang bứt tốc về đích!</div>
+        <div class="challenge-top"><div class="challenge-ribbon">⌨️ &nbsp;THỬ THÁCH: <span id="challengeType">Gõ lại chính xác đoạn văn sau!</span></div><div id="timeLeft" class="question-timer">⌛ Còn: 18.0 giây</div></div>
+        <div id="questionText" class="question-display">Heo chạy nhanh!</div>
         <div class="answer-bar">
           <input id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Gõ câu trả lời" disabled>
           <div id="answerColor" class="answer-overlay" aria-hidden="true">Nhập câu trả lời ở đây...</div>
+          <button id="answerSubmit" class="answer-submit" type="button" disabled>GỬI ↵</button>
         </div>
         <div id="answerFeedback" class="answer-feedback" aria-live="polite">Nhấn Bắt đầu để nhận thử thách!</div>
       </div>
@@ -78,7 +79,15 @@
     <footer class="sound-bar"><div class="sound-header">🔊 &nbsp;Hệ thống âm<br>thanh vui nhộn</div><div class="sound-cue">⌨️ <span>Âm gõ phím:<small>tách tách tách...</small></span></div><div class="sound-cue">✅ <span>Gõ đúng:<small>ting! (vui, nhẹ nhàng)</small></span></div><div class="sound-cue">❌ <span>Gõ sai:<small>bíp! (hài hước)</small></span></div><div class="sound-cue">⚡ <span>Tăng tốc:<small>vút! (boost)</small></span></div><div class="sound-cue">🏆 <span>Chiến thắng:<small>fanfare!</small></span></div><div class="sound-cue">🐽 <span>Thất bại:<small>hụt!... (vui nhộn)</small></span></div></footer>
 
     <div id="startOverlay" class="overlay">
-      <div class="result-card"><div class="overlay-stars">⭐ 🏆 ⭐</div><h2 id="resultHeading">BẦY HEO ĐUA!</h2><p id="resultMessage">Chọn nhân vật, đặt tên và gõ thật nhanh để vượt đối thủ!</p><button id="playBtn" class="primary-btn" type="button">🚀 BẮT ĐẦU ĐUA</button><button id="changeBtn" class="secondary-btn" type="button">🎨 CHỌN HEO & ĐẶT TÊN</button></div>
+      <div class="result-card"><div class="overlay-stars">⭐ 🏆 ⭐</div><h2 id="resultHeading">BẦY HEO ĐUA!</h2><p id="resultMessage">Chọn heo, đặt tên, rồi thử gõ chữ hoặc tính toán để vượt đối thủ!</p>
+          <div class="start-mode-wrap"><div class="start-mode-title">🎮 CHỌN CHẾ ĐỘ TRƯỚC KHI ĐUA</div>
+            <div class="start-mode-buttons">
+              <button id="startTypeMode" class="start-mode-btn chosen" type="button">⌨️ <strong>Gõ chữ</strong><small>Câu ngắn • 18 giây</small></button>
+              <button id="startMathMode" class="start-mode-btn" type="button">🧮 <strong>Tính toán</strong><small>Cộng trừ nhân chia • 14 giây</small></button>
+            </div>
+            <div id="startModeHint" class="start-mode-hint">⌨️ Chế độ: Gõ chữ</div>
+          </div>
+          <button id="playBtn" class="primary-btn" type="button">🚀 BẮT ĐẦU ĐUA</button><button id="changeBtn" class="secondary-btn" type="button">🎨 CHỌN HEO & ĐẶT TÊN</button></div>
     </div>
 
     <div id="pickerModal" class="picker-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
