@@ -1,5 +1,17 @@
 # 🐷 ĐUA HEO — Pig Racing Arena
 
+## 🏆 BẢNG ĐIỂM TOP 10 (21/11/2026)
+
+**[Chơi game và xem Top 10 trên GitHub Pages](https://hanfun.github.io/dua_heo/)**
+
+- Trong màn **Chọn heo**, nhập **Tên người chơi** (2–24 ký tự) riêng với **Tên heo** (2–18 ký tự). Game ghi nhớ tên.
+- Sau khi kết thúc đủ 3 vòng, hệ thống chốt điểm theo công thức: **hạng 1–8 = 100/80/60/45/35/25/15/10 điểm + 10 điểm mỗi câu đúng + 5 điểm mỗi lần trả lời nhanh nhất**.
+- Tên người chơi giống nhau (không phân biệt hoa/thường) được gộp điểm tích lũy sau nhiều trận. Một `matchId` không được tính hai lần.
+- Mở **🏆 TOP 10** ở header hoặc màn kết quả để xem tên, tổng điểm, số trận, số trận thắng và số câu đúng.
+- Tự lưu vào **localStorage** và ghi thêm **file JSON trong vùng lưu trữ riêng của trình duyệt (OPFS)** sau trận nếu trình duyệt hỗ trợ. Nút **TẢI TOP 10 CSV** và **LƯU FILE JSON** giúp tải file bình thường về thiết bị.
+- **Trên GitHub Pages, mỗi trình duyệt có bảng điểm riêng**, không có Top 10 chung giữa các máy. Điểm chỉ tồn tại nếu trình duyệt không xóa dữ liệu.
+- Có sẵn [máy chủ Node.js lưu file JSON](server/README.md) để chạy **Top 10 dùng chung**: `node server/server.cjs`; máy chủ ghi `server/data/scores.json`. Cần hosting Node/ổ đĩa bền vững để công khai, và cần xác thực/chấm điểm phía server để chống gian lận. GitHub Pages không chạy được máy chủ Node.
+
 ## ✅ Cập nhật 15/11/2026 — Gõ ngắn và chế độ toán
 
 **[▶ Chơi bản cập nhật trên GitHub Pages](https://hanfun.github.io/dua_heo/)**
