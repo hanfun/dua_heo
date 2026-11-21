@@ -43,3 +43,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify live website includes Top 10 build
+        shell: bash
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          echo "Published URL: ${PAGE_URL}" >> "${GITHUB_STEP_SUMMARY}"
+          SITE="${PAGE_URL%/}/"
+          ok=0
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl -fsSL --retry 1 --max-time 15 -H 'Cache-Control: no-cache' "${SITE}?build=${GITHUB_SHA:0:8}" -o /tmp/duaheo-live-index.html && grep -q 'content="2026-11-21-top10-r2"' /tmp/duaheo-live-index.html && grep -q 'id="playerNameInput"' /tmp/duaheo-live-index.html; then
+              ok=1
+              break
+            fi
+            echo "Published page not updated (attempt ${attempt}/8)"
+            sleep 8
+          done
+          test "${ok}" -eq 1
+          curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "${SITE}site/leaderboard.js?build=${GITHUB_SHA:0:8}" -o /tmp/duaheo-live-leaderboard.js
+          grep -q 'PigScores' /tmp/duaheo-live-leaderboard.js
+          echo "✅ Live Pages URL serves the latest Top 10 build" >> "${GITHUB_STEP_SUMMARY}"
