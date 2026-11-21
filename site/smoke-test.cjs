@@ -21,4 +21,12 @@ assert.match(game, /\["\+","−","×","÷"\]/, "Math must cover four operations"
 assert.match(game, /function setMode\(next\)/, "Mode switching missing");
 assert.match(game, /function submit\(\)/, "Submitting math responses missing");
 assert.match(game, /answerSubmit"\)\.addEventListener\("click",submit\)/, "Submit button must be wired");
+
+for (const id of ["playerNameInput","leaderboardBtn","leaderboardModal","top10Rows","resultPoints","resultTop10Btn","exportCsv","exportJson"]) {
+  assert.ok(html.includes('id="' + id + '"'), "Missing scoreboard UI: " + id);
+}
+assert.ok(html.includes('src="./site/leaderboard.js"'),"Leaderboard library is not included");
+assert.ok(game.includes('scores.recordResult(localStorage'),"Race must save final scores");
+assert.ok(game.includes('showTop10()'),"Top 10 UI not wired");
+assert.ok(game.includes('matchStats.correct++'),"Correct answers must contribute to points");
 console.log("Pig Racing challenge smoke checks passed (" + texts.length + " short phrases; typing + math).");
