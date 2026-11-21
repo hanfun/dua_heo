@@ -24,6 +24,7 @@
       <div class="top-icons">
         <button id="soundBtn" class="round-btn" title="Bật tắt âm thanh" aria-label="Bật tắt âm thanh" type="button">🔊</button>
         <button id="musicBtn" class="round-btn" title="Bật tắt nhạc nền" aria-label="Bật tắt nhạc nền" type="button">🎵</button>
+        <button id="leaderboardBtn" class="round-btn" title="Top 10 người chơi" aria-label="Xem Top 10 người chơi" type="button">🏆</button>
         <button id="settingsBtn" class="round-btn" title="Chọn heo và đặt tên" aria-label="Chọn heo và đặt tên" type="button">⚙</button>
       </div>
     </header>
@@ -80,6 +81,11 @@
 
     <div id="startOverlay" class="overlay">
       <div class="result-card"><div class="overlay-stars">⭐ 🏆 ⭐</div><h2 id="resultHeading">BẦY HEO ĐUA!</h2><p id="resultMessage">Chọn heo, đặt tên, rồi thử gõ chữ hoặc tính toán để vượt đối thủ!</p>
+          <div id="resultScoreBox" class="result-score-box hidden">
+            <div class="result-player-name">👤 <span id="resultPlayerName"></span></div>
+            <div class="result-points">⭐ +<span id="resultPoints">0</span> điểm</div>
+            <div id="resultScoreBreakdown" class="result-score-breakdown"></div>
+          </div>
           <div class="start-mode-wrap"><div class="start-mode-title">🎮 CHỌN CHẾ ĐỘ TRƯỚC KHI ĐUA</div>
             <div class="start-mode-buttons">
               <button id="startTypeMode" class="start-mode-btn chosen" type="button">⌨️ <strong>Gõ chữ</strong><small>Câu ngắn • 18 giây</small></button>
@@ -87,20 +93,44 @@
             </div>
             <div id="startModeHint" class="start-mode-hint">⌨️ Chế độ: Gõ chữ</div>
           </div>
-          <button id="playBtn" class="primary-btn" type="button">🚀 BẮT ĐẦU ĐUA</button><button id="changeBtn" class="secondary-btn" type="button">🎨 CHỌN HEO & ĐẶT TÊN</button></div>
+          <button id="playBtn" class="primary-btn" type="button">🚀 BẮT ĐẦU ĐUA</button>
+          <button id="resultTop10Btn" class="secondary-btn" type="button">🏆 TOP 10 ĐIỂM</button>
+          <button id="changeBtn" class="secondary-btn" type="button">🎨 CHỌN HEO & ĐẶT TÊN</button></div>
     </div>
 
     <div id="pickerModal" class="picker-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
       <div class="picker-card">
         <header class="picker-header"><span>🐷 20 CHIẾN BINH VUI NHỘN</span><h2 id="pickerTitle">CHỌN HEO CỦA BẠN!</h2><p>Tự đặt tên, chọn ngoại hình và mang chiến binh ra đường đua.</p></header>
-        <div class="picker-inner"><div class="picker-form"><label for="pigNameInput">✏️ TÊN HEO CỦA BẠN (2–18 KÝ TỰ)</label><input id="pigNameInput" type="text" maxlength="18" placeholder="Ví dụ: Heo Siêu Quậy" autocomplete="off" spellcheck="false"><span id="nameError" class="name-error"></span><label class="upload-avatar">📸 Avatar (tùy chọn) <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp"></label><span id="selectedInfo" class="selected-info">Cơ Bắp — Nổ cơ là chạy</span></div><div id="pigGrid" class="pig-grid"></div></div>
+        <div class="picker-inner">
+          <div class="player-name-row">
+            <label for="playerNameInput">👤 TÊN NGƯỜI CHƠI (2–24 KÝ TỰ)</label>
+            <input id="playerNameInput" type="text" maxlength="24" autocomplete="nickname" placeholder="Ví dụ: Minh Racer">
+            <span id="playerNameError" class="player-name-error"></span>
+            <span class="player-name-hint">Tên được lưu trong trình duyệt và dùng để cộng điểm qua các trận.</span>
+          </div>
+          <div class="picker-form"><label for="pigNameInput">✏️ TÊN HEO CỦA BẠN (2–18 KÝ TỰ)</label><input id="pigNameInput" type="text" maxlength="18" placeholder="Ví dụ: Heo Siêu Quậy" autocomplete="off" spellcheck="false"><span id="nameError" class="name-error"></span><label class="upload-avatar">📸 Avatar (tùy chọn) <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp"></label><span id="selectedInfo" class="selected-info">Cơ Bắp — Nổ cơ là chạy</span></div><div id="pigGrid" class="pig-grid"></div></div>
         <div class="picker-actions"><button id="pickerClose" type="button" class="secondary-btn">ĐÓNG</button><button id="pickerSave" type="button" class="primary-btn">✅ LƯU & SẴN SÀNG</button></div>
       </div>
+    </div>
+
+    <div id="leaderboardModal" class="picker-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="top10Heading">
+      <section class="top10-card">
+        <header class="top10-header"><h2 id="top10Heading">🏆 TOP 10 NGƯỜI CHƠI</h2><p>Điểm tích lũy theo tên người chơi trên trình duyệt này</p></header>
+        <div class="score-rules">🏁 Hạng 1–8: 100 / 80 / 60 / 45 / 35 / 25 / 15 / 10 điểm • ✅ Câu đúng: +10 • ⚡ Trả lời nhanh nhất: +5</div>
+        <div class="top10-table-wrap"><table class="top10-table"><thead><tr><th>Hạng</th><th>Người chơi</th><th>Tổng điểm</th><th>Số trận</th><th>Thắng</th><th>Câu đúng</th></tr></thead><tbody id="top10Rows"></tbody></table><p id="top10Empty" class="top10-empty">Chưa có kết quả. Hoàn thành một trận để ghi điểm!</p></div>
+        <p id="top10StorageNote" class="score-storage-note">Dữ liệu tự lưu trên thiết bị này, chưa phải bảng xếp hạng chung toàn mạng.</p>
+        <div class="top10-actions">
+          <button id="exportCsv" class="secondary-btn" type="button">⬇ TẢI TOP 10 CSV</button>
+          <button id="exportJson" class="secondary-btn" type="button">⬇ LƯU FILE JSON</button>
+          <button id="top10Close" class="primary-btn" type="button">ĐÓNG</button>
+        </div>
+      </section>
     </div>
   </div>
 </div>
 <div class="mobile-note">📱 Trải nghiệm game tốt nhất khi xoay màn hình ngang.</div>
 <script src="./site/pigs.js" defer></script>
+<script src="./site/leaderboard.js" defer></script>
 <script src="./site/game.js" defer></script>
 </body>
 </html>
