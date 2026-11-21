@@ -67,10 +67,22 @@ function toCsv(data){
   return "\uFEFF"+[headers,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n")+"\r\n";
 }
 function toJson(data){return JSON.stringify(validated(data),null,2);}
+// Origin Private File System: automatically write a JSON file after each match
+// on supported HTTPS browsers. Export JSON to download a regular file.
+async function savePrivateFile(data,storageManager){
+  if(!storageManager||typeof storageManager.getDirectory!=="function")return false;
+  try{
+    const directory=await storageManager.getDirectory();
+    const handle=await directory.getFileHandle("dua-heo-bang-diem.json",{create:true});
+    const writable=await handle.createWritable();
+    await writable.write(toJson(data));await writable.close();
+    return true;
+  }catch(err){return false;}
+}
 function download(filename,content,mime,doc,win){
   const blob=new Blob([content],{type:mime}),url=win.URL.createObjectURL(blob);
   const a=doc.createElement("a");a.href=url;a.download=filename;doc.body.append(a);a.click();a.remove();
   win.setTimeout(()=>win.URL.revokeObjectURL(url),1000);
 }
-return{STORAGE_KEY,RANK_POINTS,cleanName,playerKey,pointsFor,read,recordResult,top10,toCsv,toJson,download};
+return{STORAGE_KEY,RANK_POINTS,cleanName,playerKey,pointsFor,read,recordResult,top10,toCsv,toJson,savePrivateFile,download};
 });
