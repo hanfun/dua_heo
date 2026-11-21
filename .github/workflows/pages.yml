@@ -5,6 +5,7 @@ on:
     paths:
       - 'index.html'
       - 'site/**'
+      - 'server/**'
       - 'prototype/**'
       - 'assets/**'
       - '.github/workflows/pages.yml'
@@ -32,6 +33,7 @@ jobs:
         run: |
           node site/smoke-test.cjs
           node site/score-test.cjs
+          node server/server-test.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload static website
