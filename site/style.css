@@ -145,3 +145,6 @@ button:focus-visible,input:focus-visible,.pig-card:focus-visible{outline:4px sol
 .top10-actions{display:flex;justify-content:center;gap:7px;padding:12px 18px;background:#e5cef4;flex-wrap:wrap}
 .top10-actions button{font-size:15px;min-width:0;padding:10px 13px;margin:0}
 @media(max-width:850px){.player-name-row{grid-template-columns:1fr}.player-name-row .player-name-error,.player-name-row .player-name-hint{grid-column:1}}
+
+/* Distinct release marker to confirm Pages picked up the Top 10 build. */
+.release-mark{position:absolute;right:19px;top:97px;z-index:2;background:linear-gradient(120deg,#ffe96b,#ffb047);border:2px solid #fff5ac;color:#704065;border-radius:12px;padding:4px 10px;font-size:12px;font-weight:1000;box-shadow:0 3px #8c5875;text-shadow:none;white-space:nowrap}
