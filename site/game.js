@@ -283,6 +283,9 @@ function end(){
      finishTime:racers[0].finishAt??gameClock
    });
    currentLeaderboardData=result.data;
+   if(result.saved&&typeof navigator!=="undefined"&&navigator.storage){
+     scores.savePrivateFile(result.data,navigator.storage).catch(()=>{});
+   }
  }catch(err){result=null;console.error("Could not score race",err);}
  const matchPoints=result?result.points:scores.pointsFor(rank,matchStats.correct,matchStats.fastest);
  $("resultPlayerName").textContent=profile.playerName;
