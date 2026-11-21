@@ -28,13 +28,14 @@ const texts=[
  "Về đích thôi!"
 ];
 const canvas=$("raceCanvas"),ctx=canvas.getContext("2d");
-const roster=window.PIG_ROSTER,art=window.PigArt;
+const roster=window.PIG_ROSTER,art=window.PigArt,scores=window.PigScores;
 const nameField=$("pigNameInput");
 const stage=$("stage");
 const mapPath=$("mapLine");
-let profile={id:2,name:"Cơ Bắp"},avatarURL=null;
-try {const old=JSON.parse(localStorage.getItem("pigRaceProfileV3")||"null");if(old && Number.isInteger(old.id)&&roster[old.id]&&typeof old.name==="string"&&old.name.length>=2)profile={id:old.id,name:old.name.slice(0,18)};}catch(e){}
+let profile={id:2,name:"Cơ Bắp",playerName:""},avatarURL=null;
+try {const old=JSON.parse(localStorage.getItem("pigRaceProfileV3")||"null");if(old && Number.isInteger(old.id)&&roster[old.id]&&typeof old.name==="string"&&old.name.length>=2)profile={id:old.id,name:old.name.slice(0,18),playerName:scores.cleanName(old.playerName||"")};}catch(e){}
 let selected=profile.id;
+let matchStats={correct:0,fastest:0,typing:0,math:0},matchId="",currentLeaderboardData=null;
 let racers=[],particles=[],state="ready",mode="typing",pendingMode=null,question="",expectedAnswer=0,questionId=0;
 let qStart=0,qElapsed=0,gameClock=0,answerCompletedAt=null,botTimes=[],botDone=[],userDone=false,wrongFiredAt=-10,correctWords=0;
 let frameHandle=0,lastTick=0,lastUi=0,composing=false,muted=false,music=false,musicTimer=0;
@@ -147,14 +148,22 @@ function renderRoster(){
 function pickerOpen(){
  if(state==="racing"){$("bubbleMessage").textContent="🏁 Kết thúc trận rồi hãy đổi heo nhé!";bubble();return;}
  selected=profile.id;nameField.value=profile.name;
+ $("playerNameInput").value=profile.playerName||"";
+ $("playerNameError").textContent="";
  $("selectedInfo").textContent=roster[selected].name+" — "+roster[selected].tagline;
  $("nameError").textContent="";renderRoster();
  $("pickerModal").classList.remove("hidden");nameField.focus();
 }
 function pickerSave(){
+ const playerName=scores.cleanName($("playerNameInput").value);
+ if(playerName.length<2){
+   $("playerNameError").textContent="❌ Tên người chơi cần từ 2 đến 24 ký tự.";
+   $("playerNameInput").focus();return;
+ }
+ $("playerNameError").textContent="";
  const name=nameField.value.trim().replace(/\s+/g," ");
  if(name.length<2 || name.length>18){$("nameError").textContent="❌ Tên phải có từ 2 đến 18 ký tự.";nameField.focus();return;}
- profile={id:selected,name};try{localStorage.setItem("pigRaceProfileV3",JSON.stringify(profile));}catch(e){}
+ profile={id:selected,name,playerName};try{localStorage.setItem("pigRaceProfileV3",JSON.stringify(profile));}catch(e){}
  $("pickerModal").classList.add("hidden");setAvatar();reset();
  $("resultHeading").textContent="🐷 "+profile.name.toUpperCase()+"!";
  $("resultMessage").textContent="Chiến binh "+roster[profile.id].name+" đã sẵn sàng. Gõ đúng, chạy nhanh, giành cúp!";
@@ -164,6 +173,8 @@ function reset(){
  if(frameHandle){cancelAnimationFrame(frameHandle);frameHandle=0;}
  if(musicTimer){clearInterval(musicTimer);musicTimer=0;}
  state="ready";gameClock=0;lastTick=0;lastUi=0;qElapsed=0;userDone=false;questionId=0;particles=[];
+ matchStats={correct:0,fastest:0,typing:0,math:0};
+ $("resultScoreBox").classList.add("hidden");$("startOverlay").classList.remove("finished-overlay");
  makeRacers();updateRank();
  $("startOverlay").classList.remove("hidden");
  $("playBtn").textContent="🚀 BẮT ĐẦU ĐUA";
@@ -180,7 +191,10 @@ function reset(){
 function start(){
  if(state==="racing")return;
  if($("pickerModal").classList.contains("hidden")===false)return;
- reset();state="racing";$("startOverlay").classList.add("hidden");
+ reset();
+ if(!scores.cleanName(profile.playerName||"")){pickerOpen();return;}
+ matchId="race-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+ state="racing";$("startOverlay").classList.add("hidden");
  $("answerInput").disabled=false;nextQuestion();
  lastTick=performance.now();sfx("start");musicStart();frameHandle=requestAnimationFrame(tick);
 }
@@ -246,6 +260,9 @@ function submit(){
  userDone=true;answerCompletedAt=gameClock;$("answerInput").disabled=true;$("answerSubmit").disabled=true;
  const responseTime=gameClock-qStart;
  const rank=1+botTimes.slice(1).filter(t=>t<=responseTime).length;
+ matchStats.correct++;
+ if(rank===1)matchStats.fastest++;
+ matchStats[mode]++;
  boost(racers[0],BOOSTS[Math.min(BOOSTS.length-1,rank-1)]);
  $("answerFeedback").textContent="✅ Chính xác! Hạng "+rank+"/"+racers.length+" sau "+responseTime.toFixed(2)+"s • BOOST!";
  bubble("⚡ "+profile.name+" BỨT TỐC!");
@@ -258,8 +275,24 @@ function end(){
  if(musicTimer){clearInterval(musicTimer);musicTimer=0;}
  const sorted=[...racers].sort((a,b)=>(a.finishAt??Infinity)-(b.finishAt??Infinity));
  const rank=sorted.indexOf(racers[0])+1,win=rank===1;
+ let result;
+ try{
+   result=scores.recordResult(localStorage,{
+     matchId,playerName:profile.playerName,pigName:profile.name,mode,rank,
+     correct:matchStats.correct,fastest:matchStats.fastest,
+     finishTime:racers[0].finishAt??gameClock
+   });
+   currentLeaderboardData=result.data;
+ }catch(err){result=null;console.error("Could not score race",err);}
+ const matchPoints=result?result.points:scores.pointsFor(rank,matchStats.correct,matchStats.fastest);
+ $("resultPlayerName").textContent=profile.playerName;
+ $("resultPoints").textContent=matchPoints.toLocaleString("vi-VN");
+ $("resultScoreBreakdown").textContent="Hạng "+rank+" • "+matchStats.correct+" câu đúng • "+matchStats.fastest+" lần nhanh nhất";
+ $("resultScoreBox").classList.remove("hidden");
+ $("startOverlay").classList.add("finished-overlay");
  $("resultHeading").textContent=win?"🏆 VÔ ĐỊCH ĐƯỜNG ĐUA!":"🐷 VỀ ĐÍCH HẠNG "+rank+"!";
- $("resultMessage").textContent=win?profile.name+" đã chiến thắng ngoạn mục!":profile.name+" đã hoàn thành 3 vòng. Cùng thử lại để giành chức vô địch nhé!";
+ $("resultMessage").textContent=(win?profile.name+" chiến thắng!":profile.name+" hoàn thành 3 vòng!")+
+ (result&&!result.saved?" ⚠️ Không lưu được vào trình duyệt; hãy xuất file JSON.":" Điểm đã được tính cho "+profile.playerName+".");
  $("playBtn").textContent="🔁 CHƠI LẠI";
  $("startOverlay").classList.remove("hidden");
  sfx(win?"win":"lose");
@@ -366,10 +399,40 @@ function drawRace(t){
  }
  ctx.globalAlpha=1;
 }
+
+function showTop10(){
+ const data=currentLeaderboardData||scores.read(localStorage);
+ const leaders=scores.top10(data);
+ const body=$("top10Rows");body.replaceChildren();
+ leaders.forEach((p,i)=>{
+   const row=document.createElement("tr");
+   if(scores.playerKey(p.name)===scores.playerKey(profile.playerName||""))row.classList.add("my-score");
+   const columns=[i===0?"🥇":i===1?"🥈":i===2?"🥉":String(i+1),p.name,p.totalPoints.toLocaleString("vi-VN"),p.races,p.wins,p.correct];
+   columns.forEach(value=>{const cell=document.createElement("td");cell.textContent=String(value);row.append(cell);});
+   body.append(row);
+ });
+ $("top10Empty").classList.toggle("hidden",leaders.length>0);
+ $("top10StorageNote").textContent="Điểm được lưu trên trình duyệt hiện tại. Dùng TẢI CSV/JSON để có file; chưa có bảng chung giữa các thiết bị.";
+ $("leaderboardModal").classList.remove("hidden");
+}
+function exportScores(format){
+ const data=currentLeaderboardData||scores.read(localStorage);
+ try{
+   if(format==="csv")scores.download("dua-heo-top-10.csv",scores.toCsv(data),"text/csv;charset=utf-8",document,window);
+   else scores.download("dua-heo-bang-diem.json",scores.toJson(data),"application/json;charset=utf-8",document,window);
+ }catch(err){
+   $("top10StorageNote").textContent="Không thể tải file trên trình duyệt này. Vui lòng dùng Chrome hoặc Edge.";
+ }
+}
 function keyEvents(){
  $("playBtn").addEventListener("click",start);
  $("changeBtn").addEventListener("click",pickerOpen);
  $("settingsBtn").addEventListener("click",pickerOpen);
+ $("leaderboardBtn").addEventListener("click",showTop10);
+ $("resultTop10Btn").addEventListener("click",showTop10);
+ $("top10Close").addEventListener("click",()=>$("leaderboardModal").classList.add("hidden"));
+ $("exportCsv").addEventListener("click",()=>exportScores("csv"));
+ $("exportJson").addEventListener("click",()=>exportScores("json"));
  $("pickerClose").addEventListener("click",()=>$("pickerModal").classList.add("hidden"));
  $("pickerSave").addEventListener("click",pickerSave);
  nameField.addEventListener("keydown",e=>{if(e.key==="Enter")pickerSave();});
