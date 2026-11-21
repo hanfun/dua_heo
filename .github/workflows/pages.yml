@@ -29,7 +29,9 @@ jobs:
       # Settings > Pages > Build and deployment > Source = GitHub Actions
       # A default GITHUB_TOKEN cannot enable a Pages site automatically.
       - name: Validate JavaScript and game challenge modes
-        run: |\n          node site/smoke-test.cjs\n          node site/score-test.cjs
+        run: |
+          node site/smoke-test.cjs
+          node site/score-test.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload static website
