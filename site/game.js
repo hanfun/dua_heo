@@ -29,6 +29,8 @@ const texts=[
 ];
 const canvas=$("raceCanvas"),ctx=canvas.getContext("2d");
 const roster=window.PIG_ROSTER,art=window.PigArt,scores=window.PigScores;
+const sharedApi=window.PIG_SHARED_SCORE_API===true;
+let syncPromise=Promise.resolve();
 const nameField=$("pigNameInput");
 const stage=$("stage");
 const mapPath=$("mapLine");
@@ -275,14 +277,22 @@ function end(){
  if(musicTimer){clearInterval(musicTimer);musicTimer=0;}
  const sorted=[...racers].sort((a,b)=>(a.finishAt??Infinity)-(b.finishAt??Infinity));
  const rank=sorted.indexOf(racers[0])+1,win=rank===1;
+ const payload={
+   matchId,playerName:profile.playerName,pigName:profile.name,mode,rank,
+   correct:matchStats.correct,fastest:matchStats.fastest,
+   finishTime:racers[0].finishAt??gameClock
+ };
  let result;
  try{
-   result=scores.recordResult(localStorage,{
-     matchId,playerName:profile.playerName,pigName:profile.name,mode,rank,
-     correct:matchStats.correct,fastest:matchStats.fastest,
-     finishTime:racers[0].finishAt??gameClock
-   });
+   result=scores.recordResult(localStorage,payload);
    currentLeaderboardData=result.data;
+   if(sharedApi){
+     syncPromise=fetch("/api/results",{
+       method:"POST",headers:{"Content-Type":"application/json"},
+       body:JSON.stringify(payload)
+     }).then(r=>{if(!r.ok)throw Error("Score API failed");return r.json();})
+       .catch(err=>{console.warn("Shared scoreboard unavailable; local copy kept.");});
+   }
    if(result.saved&&typeof navigator!=="undefined"&&navigator.storage){
      scores.savePrivateFile(result.data,navigator.storage).catch(()=>{});
    }
@@ -403,8 +413,7 @@ function drawRace(t){
  ctx.globalAlpha=1;
 }
 
-function showTop10(){
- const data=currentLeaderboardData||scores.read(localStorage);
+function renderTop10(data,note){
  const leaders=scores.top10(data);
  const body=$("top10Rows");body.replaceChildren();
  leaders.forEach((p,i)=>{
@@ -415,8 +424,23 @@ function showTop10(){
    body.append(row);
  });
  $("top10Empty").classList.toggle("hidden",leaders.length>0);
- $("top10StorageNote").textContent="Điểm được lưu trên trình duyệt hiện tại. Dùng TẢI CSV/JSON để có file; chưa có bảng chung giữa các thiết bị.";
+ $("top10StorageNote").textContent=note;
+}
+function showTop10(){
+ renderTop10(currentLeaderboardData||scores.read(localStorage),
+   sharedApi?"Đang tải bảng xếp hạng chung từ máy chủ...":
+   "Điểm được lưu trên trình duyệt hiện tại. Dùng TẢI CSV/JSON để có file; chưa có bảng chung giữa các thiết bị.");
  $("leaderboardModal").classList.remove("hidden");
+ if(sharedApi){
+   Promise.resolve(syncPromise).then(()=>fetch("/api/scores",{cache:"no-store"}))
+    .then(r=>{if(!r.ok)throw Error("Shared scores unavailable");return r.json();})
+    .then(data=>{
+      currentLeaderboardData=data;
+      if(!$("leaderboardModal").classList.contains("hidden"))
+        renderTop10(data,"Bảng điểm chung lưu trên máy chủ file JSON. Đây là bản demo, chưa có chống gian lận bằng tài khoản.");
+    })
+    .catch(()=>{$("top10StorageNote").textContent="Không kết nối được máy chủ điểm. Đang dùng bảng điểm trên thiết bị.";});
+ }
 }
 function exportScores(format){
  const data=currentLeaderboardData||scores.read(localStorage);
